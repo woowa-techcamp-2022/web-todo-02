@@ -1,18 +1,22 @@
-const path = require('path');
+import path from 'path';
 
-module.exports = {
-    entry: './src/class.js',
-    output: {
-        filename: 'main.js',
-        path: path.resolve(__dirname, 'dist'),
-    },
-    module: {
-        rules: [{
-            test: /\.js$/,
-            exclude: /node_modules/,
-            use: {
-                loader: 'babel-loader'
-            }
-        },],
-    }
+const __dirname = path.resolve();
+
+export default {
+  entry: './src/js/index.js',
+  output: {
+    filename: 'main.js',
+    path: path.resolve(__dirname, 'dist'),
+  },
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+        },
+      },
+    ],
+  },
 };
