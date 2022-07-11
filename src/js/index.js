@@ -1,1 +1,3 @@
-document.getElementById('app').innerText = 'Hello World!';
+import '../css/normalize.css';
+import '../css/variables.css';
+import '../css/style.css';
