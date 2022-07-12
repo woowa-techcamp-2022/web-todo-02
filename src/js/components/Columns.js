@@ -50,7 +50,7 @@ export default class {
   validateCardForm(event) {
     const $cardForm = event.target.closest('.card-form');
     if ($cardForm) {
-      const submitButton = document.querySelector('.card-form-submitbtn');
+      const submitButton = $cardForm.querySelector('.card-form-submitbtn');
       if ($cardForm.title.value !== '' && $cardForm.content.value !== '') {
         submitButton.disabled = false;
       } else {
