@@ -85,7 +85,7 @@ html {
   background: rgb(48, 118, 215);
 }
 
-.card-form-submitbtn {
+.card-form-submitbtn:disabled {
   background: rgb(147, 197, 249);
 }
 

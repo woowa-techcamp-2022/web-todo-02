@@ -44,9 +44,22 @@ export default class {
     }
   }
 
+  validateCardForm(event) {
+    const $cardForm = event.target.closest('.card-form');
+    if ($cardForm) {
+      const submitButton = document.querySelector('.card-form-submitbtn');
+      if ($cardForm.title.value !== '' && $cardForm.content.value !== '') {
+        submitButton.disabled = false;
+      } else {
+        submitButton.disabled = true;
+      }
+    }
+  }
+
   setEvents() {
     this.$target.addEventListener('click', this.clickEvents.bind(this));
     this.$target.addEventListener('submit', this.onAddCard.bind(this));
+    this.$target.addEventListener('input', this.validateCardForm.bind(this));
   }
 
   setState(nextState) {
@@ -66,7 +79,7 @@ export default class {
           <input type="text" name="title" placeholder="제목을 입력하세요" />
           <input type="text" name="content" placeholder="내용을 입력하세요" />
           <div class="card-form-buttons">
-            <button class="card-form-cancelbtn">취소</button>
+            <button type="button" class="card-form-cancelbtn">취소</button>
             <button class="card-form-submitbtn" disabled>등록</button>
           </div>
         </form>
