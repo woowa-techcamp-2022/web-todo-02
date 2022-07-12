@@ -64,6 +64,13 @@ html {
   font-size: 12px;
 }
 
+.column-header-add svg path,
+.column-header-delete svg path,
 .card-header-delete svg path {
   fill: rgb(150, 150, 150);
+}
+
+.column-header-delete:hover svg path,
+.card-header-delete:hover svg path {
+  fill: red;
 }
