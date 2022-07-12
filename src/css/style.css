@@ -82,6 +82,9 @@ html {
 .card-header-delete svg path {
   fill: rgb(150, 150, 150);
 }
+.column-header-add:hover svg path {
+  fill: blue;
+}
 
 .column-header-delete:hover svg path,
 .card-header-delete:hover svg path {
