@@ -43,10 +43,60 @@ html {
 }
 
 .card {
-  padding: 10px 20px;
+  padding: 12px 20px;
   margin: 10px 0;
   background-color: white;
   border-radius: 10px;
+}
+
+.card-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 4px 0;
+}
+
+.card-form input {
+  border: 0;
+}
+
+.card-form input[name='title'] {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.card-form-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.card-form-cancelbtn {
+  color: gray;
+  background: rgb(224, 224, 224);
+}
+
+.card-form-cancelbtn:hover {
+  color: black;
+  background: rgb(200, 200, 200);
+}
+
+.card-form-submitbtn {
+  color: white;
+  background: rgb(48, 118, 215);
+}
+
+.card-form-submitbtn {
+  background: rgb(147, 197, 249);
+}
+
+.card-form-buttons button {
+  width: 100%;
+  padding: 12px 0;
+  border-radius: 8px;
+}
+
+.card.is-writing {
+  border: 1px solid blue;
 }
 
 .card.is-writing article {
