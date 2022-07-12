@@ -63,9 +63,12 @@ export default class {
         card.isWriting ? 'is-writing' : ''
       }" data-index="${index}">
         <form class="card-form">
-          <input type="text" name="title" />
-          <input type="text" name="content" />
-          <button class="card-submitbtn">등록</button>
+          <input type="text" name="title" placeholder="제목을 입력하세요" />
+          <input type="text" name="content" placeholder="내용을 입력하세요" />
+          <div class="card-form-buttons">
+            <button class="card-form-cancelbtn">취소</button>
+            <button class="card-form-submitbtn" disabled>등록</button>
+          </div>
         </form>
         <article>
           <header class="card-header">
