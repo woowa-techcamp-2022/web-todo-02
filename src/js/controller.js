@@ -16,6 +16,16 @@ export default class {
     this.addAllColumns();
   }
 
+  addColumnHeaderCount(event) {
+    const $column = event.target.closest('.column');
+    $column.querySelector('.column-header-counter').innerHTML++;
+  }
+
+  subtractColumnHeaderCount(event) {
+    const $column = event.target.closest('.column');
+    $column.querySelector('.column-header-counter').innerHTML--;
+  }
+
   cardFormSubmitEvent(event) {
     event.preventDefault();
     const title = event.target.title.value;
@@ -23,6 +33,7 @@ export default class {
     this.model.addCard({ title, content }, (card) => {
       const $card = this.view.getCard(card);
       event.target.closest('.column').classList.remove('is-adding');
+      this.addColumnHeaderCount(event);
       event.target.closest('.card').replaceWith($card);
     });
   }
@@ -46,6 +57,7 @@ export default class {
 
   cardDeleteEvent(event) {
     this.model.deleteCard(() => {
+      this.subtractColumnHeaderCount(event);
       const $card = event.target.closest('.card');
       $card.remove();
     });
