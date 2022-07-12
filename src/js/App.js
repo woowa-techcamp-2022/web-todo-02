@@ -17,6 +17,7 @@ export default class {
           ],
         },
         {
+          isAdding: false,
           title: 'title',
           cards: [{ title: 'title', content: 'cotent', author: 'author' }],
         },
@@ -31,22 +32,22 @@ export default class {
       onClickCardAddButton(event) {
         const $column = event.target.closest('.column');
         const columnIndex = Number($column.dataset.index);
-        if (this.state.isAdding) {
+        const column = this.state.columns[columnIndex];
+        if (column.isAdding) {
           this.setState({
-            isAdding: false,
             columns: this.state.columns.map((column, index) =>
               index === columnIndex
-                ? { ...column, cards: column.cards.slice(1) }
+                ? { ...column, isAdding: false, cards: column.cards.slice(1) }
                 : column
             ),
           });
         } else {
           this.setState({
-            isAdding: true,
             columns: this.state.columns.map((column, index) =>
               index === columnIndex
                 ? {
                     ...column,
+                    isAdding: true,
                     cards: [
                       {
                         title: '',
@@ -71,11 +72,11 @@ export default class {
         const title = event.target.title.value;
         const content = event.target.title.value;
         this.setState({
-          isAdding: false,
           columns: this.state.columns.map((column, index) =>
             index === columnIndex
               ? {
                   ...column,
+                  isAdding: false,
                   cards: column.cards.map((card, index) =>
                     index === cardIndex
                       ? {
@@ -97,11 +98,11 @@ export default class {
         const columnIndex = Number($column.dataset.index);
         const cardIndex = Number($card.dataset.index);
         this.setState({
-          isAdding: false,
           columns: this.state.columns.map((column, index) =>
             index === columnIndex
               ? {
                   ...column,
+                  isAdding: false,
                   cards: column.cards.filter(
                     (card, index) => index !== cardIndex
                   ),
