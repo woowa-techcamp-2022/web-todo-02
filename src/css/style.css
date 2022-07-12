@@ -9,7 +9,7 @@ html {
   padding: var(--padding-outer);
 }
 
-#main {
+.columns {
   display: flex;
   flex-direction: row;
   gap: 15px;
@@ -47,6 +47,14 @@ html {
   margin: 10px 0;
   background-color: white;
   border-radius: 10px;
+}
+
+.card.is-writing article {
+  display: none;
+}
+
+.card:not(.is-writing) form {
+  display: none;
 }
 
 .card.danger {
