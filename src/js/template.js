@@ -1,75 +1,25 @@
 export default class {
-  constructor({
-    $app,
-    initialState,
-    onClickCardAddButton,
-    onAddCard,
-    onDeleteCard,
-  }) {
-    this.state = initialState;
-    this.$target = document.createElement('div');
-    this.$target.className = 'columns';
-    this.onClickCardAddButton = onClickCardAddButton;
-    this.onAddCard = onAddCard;
-    this.onDeleteCard = onDeleteCard;
-    $app.appendChild(this.$target);
+  constructor() {}
 
-    this.setEvents();
-    this.render();
-  }
-
-  clickCardAddButtonEvent(event) {
-    if (event.target.closest('.column-header-add')) {
-      this.onClickCardAddButton(event);
-    }
-  }
-
-  submitAddCardEvent(event) {
-    if (event.target.closest('.card-form')) {
-      this.onAddCard(event);
-    }
-  }
-
-  deleteCardEvent(event) {
-    if (event.target.closest('.card-header-delete')) {
-      this.onDeleteCard(event);
-    }
-  }
-
-  clickEvents(event) {
-    if (event.target.closest('.column-header-add')) {
-      this.onClickCardAddButton(event);
-    } else if (event.target.closest('.card-header-delete')) {
-      this.onDeleteCard(event);
-    }
-  }
-
-  setEvents() {
-    this.$target.addEventListener('click', this.clickEvents.bind(this));
-    this.$target.addEventListener('submit', this.onAddCard.bind(this));
-  }
-
-  setState(nextState) {
-    this.state = {
-      ...this.state,
-      ...nextState,
-    };
-    this.render();
-  }
-
-  cards(card, index) {
-    return `
-      <li class="card ${
-        card.isWriting ? 'is-writing' : ''
-      }" data-index="${index}">
+  cardForm(id) {
+    return ` 
+      <li class="card" data-id="${id}">
         <form class="card-form">
           <input type="text" name="title" />
           <input type="text" name="content" />
           <button class="card-submitbtn">등록</button>
         </form>
+      </li>
+    `;
+  }
+
+  card(card) {
+    const { id, title, content } = card;
+    return `
+      <li class="card" data-id="${id}">
         <article>
           <header class="card-header">
-            <h3 class="card-header-title">${card.title}</h3>
+            <h3 class="card-header-title">${title}</h3>
             <button class="card-header-delete">
               <svg
                 width="24"
@@ -85,25 +35,21 @@ export default class {
               </svg>
             </button>
           </header>
-          <p class="card-content">${card.content}</p>
+          <p class="card-content">${content}</p>
           <footer class="card-author">author by web</footer>
         </article>
       </li>
     `;
   }
 
-  render() {
-    const { columns } = this.state;
-
-    this.$target.innerHTML = columns
-      .map(
-        (column, index) =>
-          `
-      <section class="column" data-index="${index}">
+  column(column) {
+    const { id, title, cards } = column;
+    return `
+      <section class="column" data-id="${id}">
         <div class="column-header">
           <div>
-            <h2 class="column-header-title">${column.title}</h2>
-            <div class="column-header-counter">${column.cards.length}</div>
+            <h2 class="column-header-title">${title}</h2>
+            <div class="column-header-counter">${cards.length}</div>
           </div>
           <div>
             <button class="column-header-add">
@@ -139,11 +85,8 @@ export default class {
           </div>
         </div>
         <ul class="column-cards">
-          ${column.cards.map((card, index) => this.cards(card, index)).join('')}
+          ${cards.map((card) => this.card(card)).join('')}
         </ul>
-      </section>
-    `
-      )
-      .join('');
+      </section>`;
   }
 }
