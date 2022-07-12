@@ -49,6 +49,11 @@ html {
   border-radius: 10px;
 }
 
+.card.danger {
+  border: 1px solid red;
+  background-color: rgba(255, 0, 0, 0.1);
+}
+
 .card-header {
   display: flex;
   align-items: center;
@@ -64,6 +69,13 @@ html {
   font-size: 12px;
 }
 
+.column-header-add svg path,
+.column-header-delete svg path,
 .card-header-delete svg path {
   fill: rgb(150, 150, 150);
+}
+
+.column-header-delete:hover svg path,
+.card-header-delete:hover svg path {
+  fill: red;
 }

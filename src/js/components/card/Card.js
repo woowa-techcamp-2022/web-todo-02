@@ -32,7 +32,7 @@ export default class {
   }
 
   deleteCard() {
-    this.$element.remove();
+    if (confirm('선택한 카드를 삭제하시겠습니까?')) this.$element.remove();
   }
 
   changeTitle(title) {
