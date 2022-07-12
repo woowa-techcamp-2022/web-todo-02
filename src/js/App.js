@@ -97,6 +97,7 @@ export default class {
         const columnIndex = Number($column.dataset.index);
         const cardIndex = Number($card.dataset.index);
         this.setState({
+          isAdding: false,
           columns: this.state.columns.map((column, index) =>
             index === columnIndex
               ? {

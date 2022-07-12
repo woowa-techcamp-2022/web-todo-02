@@ -39,7 +39,10 @@ export default class {
   clickEvents(event) {
     if (event.target.closest('.column-header-add')) {
       this.onClickCardAddButton(event);
-    } else if (event.target.closest('.card-header-delete')) {
+    } else if (
+      event.target.closest('.card-header-delete') ||
+      event.target.closest('.card-form-cancelbtn')
+    ) {
       this.onDeleteCard(event);
     }
   }
