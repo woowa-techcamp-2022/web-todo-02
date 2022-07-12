@@ -1,4 +1,5 @@
 import express from 'express';
+import { showDatabases } from './db.js';
 import { indexRouter } from './router/index.js';
 
 const app = express();
@@ -12,3 +13,5 @@ app.use(express.urlencoded({ extended: false }));
 app.use('/', indexRouter);
 
 app.listen(PORT);
+
+showDatabases();
