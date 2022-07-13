@@ -9,7 +9,7 @@ html {
   padding: var(--padding-outer);
 }
 
-#main {
+.columns {
   display: flex;
   flex-direction: row;
   gap: 15px;
