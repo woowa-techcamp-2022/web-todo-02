@@ -1,3 +1,4 @@
+import { insertAfter } from '../utils.js';
 import view from '../view.js';
 
 export default class {
@@ -63,14 +64,35 @@ export default class {
   replaceCardWithSkeleton(event) {
     const $originalCard = event.target;
     const $skeleton = document.querySelector('.skeleton');
-    $skeleton.classList.add('replaced');
+    $skeleton.classList.add('changed');
     event.target.replaceWith($skeleton.cloneNode(true));
     $skeleton.replaceWith($originalCard);
   }
 
+  moveSkeletonToAdjacentCard(event) {
+    const $card = event.target;
+    const cardRect = $card.getBoundingClientRect();
+    const yCenter = cardRect.top + cardRect.height / 2;
+    const $skeleton = document.querySelector('.skeleton');
+    $skeleton.classList.add('changed');
+    if (event.clientY > yCenter) {
+      insertAfter($skeleton, $card);
+    } else {
+      $card.parentNode.insertBefore($skeleton, $card);
+    }
+  }
+
   setMouseEnterEventToAllCards() {
-    this.getAllCardsWithoutMovingCard().forEach((card) => {
-      card.onmouseenter = this.replaceCardWithSkeleton.bind(this);
+    this.getAllCardsWithoutMovingCard().forEach(($card) => {
+      $card.onmouseenter = (event) => {
+        const newColumnId = $card.closest('.column').dataset.id;
+        if (this.$element.dataset.columnId === newColumnId) {
+          this.replaceCardWithSkeleton(event);
+        } else {
+          this.moveSkeletonToAdjacentCard(event);
+        }
+        this.setColumnId(newColumnId);
+      };
     });
   }
 
@@ -80,12 +102,17 @@ export default class {
     });
   }
 
+  setColumnId(id) {
+    this.$element.dataset.columnId = id;
+  }
+
   dragStart(event) {
     if (event.target.closest('.card-header-delete')) return;
 
     this.setCardInitialPosition();
     this.addSkeleton();
     this.$element.classList.add('moving');
+    this.setColumnId(this.$element.closest('.column').dataset.id);
     // 1. pointer-events를 none으로 설정한 이유: 카드 드래그 시 다른 카드의 mouseenter 이벤트를 감지하기 위해
     // 2. setTimeout으로 delay를 넣어준 이유: dblclick 이벤트를 감지하기 위해
     const styleTimeoutID = setTimeout(() => {
@@ -116,8 +143,8 @@ export default class {
   dragEnd() {
     this.$element.removeAttribute('style');
     const $skeleton = document.querySelector('.skeleton');
-    // dbl 클릭 이벤트를 감지하기 위해 잔상 카드가 이동했을 때만 엘리먼트와 교체해주도록 함
-    if ($skeleton.classList.contains('replaced')) {
+    // dblclick 이벤트를 감지하기 위해 잔상 카드가 이동했을 때만 엘리먼트와 교체해주도록 함
+    if ($skeleton.classList.contains('changed')) {
       $skeleton.replaceWith(this.$element);
     } else {
       $skeleton.remove();
