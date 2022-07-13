@@ -15,7 +15,6 @@ function getAllColumnsAndTodos() {
         on c.id = t.col_id;`)
       )
       .then(([rows, field]) => {
-        /* data processing */
         resolve(rows);
       })
       .catch((e) => reject(e))
@@ -23,4 +22,27 @@ function getAllColumnsAndTodos() {
   });
 }
 
-export default { getAllColumnsAndTodos };
+function addTodo(id, title, content, columnId) {
+  let conn;
+
+  return new Promise((resolve, reject) => {
+    getConnection()
+      .then((connection) => (conn = connection))
+      .then((conn) =>
+        conn.execute(
+          `
+        insert into todo (id, title, content, col_id)
+        values (?, ?, ?, ?);
+        `,
+          [id, title, content, columnId]
+        )
+      )
+      .then(([rows, field]) => {
+        if (rows.affectedRows === 1) resolve();
+      })
+      .catch((e) => reject(e))
+      .finally(() => conn.end());
+  });
+}
+
+export default { getAllColumnsAndTodos, addTodo };

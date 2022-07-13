@@ -1,4 +1,5 @@
 import dao from '../dao/Dao.js';
+import getUniqueId from '../util/uuid.js';
 
 function getAllColumnsAndTodos(req, res) {
   dao
@@ -35,4 +36,24 @@ function getAllColumnsAndTodos(req, res) {
     });
 }
 
-export default { getAllColumnsAndTodos };
+function addTodo(req, res) {
+  const { id: columnId, title, content } = req.body;
+  const todoId = getUniqueId();
+
+  dao
+    .addTodo(todoId, title, content, columnId)
+    .then(() => {
+      res.status(200).send({
+        id: todoId,
+        title,
+        content,
+        columnId,
+      });
+    })
+    .catch((e) => {
+      console.log(e);
+      res.status(500).send(e);
+    });
+}
+
+export default { getAllColumnsAndTodos, addTodo };
