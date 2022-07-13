@@ -45,4 +45,29 @@ function postTodo(id, title, content, columnId) {
   });
 }
 
-export default { getAllColumnsAndTodos, postTodo };
+function putTodo(id, title, content) {
+  let conn;
+
+  return new Promise((resolve, reject) => {
+    getConnection()
+      .then((connection) => (conn = connection))
+      .then((conn) =>
+        conn.execute(
+          `
+          update todo
+          set title = ?, content = ?
+          where id = ?;
+          `,
+          [title, content, id]
+        )
+      )
+      .then(([rows, field]) => {
+        if (rows.changedRows === 1) resolve();
+        else reject(new Error('number of changed rows not One'));
+      })
+      .catch((e) => reject(e))
+      .finally(() => conn.end());
+  });
+}
+
+export default { getAllColumnsAndTodos, postTodo, putTodo };

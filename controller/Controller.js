@@ -56,4 +56,22 @@ function postTodo(req, res) {
     });
 }
 
-export default { getAllColumnsAndTodos, postTodo };
+function putTodo(req, res) {
+  const { id, title, content } = req.body;
+
+  dao
+    .putTodo(id, title, content)
+    .then(() => {
+      res.status(200).send({
+        id,
+        title,
+        content,
+      });
+    })
+    .catch((e) => {
+      console.log(e);
+      res.status(500).send(e);
+    });
+}
+
+export default { getAllColumnsAndTodos, postTodo, putTodo };
