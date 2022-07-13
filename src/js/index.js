@@ -1,6 +1,6 @@
 import '../css/normalize.css';
 import '../css/variables.css';
 import '../css/style.css';
-import App from './App.js';
+import Controller from './Controller.js';
 
-new App(document.querySelector('#main'));
+window.controller = new Controller();
