@@ -56,16 +56,17 @@ html {
   border-radius: 10px;
 }
 
-.card.moving {
-  user-select: none;
-}
-
 .card.skeleton {
   opacity: 0.4;
   box-shadow: 0px 0px 0px 1px #0075de;
 }
 
+.card.skeleton .card-header-delete {
+  display: none;
+}
+
 .card.moving {
+  user-select: none;
   z-index: 99;
   position: absolute;
   background: rgba(255, 255, 255, 0.8);
