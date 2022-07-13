@@ -1,6 +1,6 @@
-import Card from './templates/Card.js';
-import CardForm from './templates/CardForm.js';
-import Column from './templates/Column.js';
+import Card from './components/Card.js';
+import CardForm from './components/CardForm.js';
+import Column from './components/Column.js';
 
 class View {
   constructor() {}
