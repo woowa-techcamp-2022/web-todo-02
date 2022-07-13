@@ -84,8 +84,12 @@ html {
 }
 
 .card-form input[name='title'] {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
+}
+
+.card-form input[name='content'] {
+  font-size: 16px;
 }
 
 .card-form-buttons {
