@@ -88,7 +88,7 @@ function deleteTodo(id) {
       )
       .then(([rows, field]) => {
         if (rows.affectedRows === 1) resolve();
-        else reject(new Error('number of changed rows not One'));
+        else reject(new Error('number of affected rows not One'));
       })
       .catch((e) => reject(e))
       .finally(() => conn.end());
@@ -118,10 +118,35 @@ function getAllHistory() {
   });
 }
 
+function postHistory(action, todoId, fromColId, toColId) {
+  let conn;
+
+  return new Promise((resolve, reject) => {
+    getConnection()
+      .then((connection) => (conn = connection))
+      .then((conn) =>
+        conn.execute(
+          `
+            insert into hist (act, todo_title, from_col, to_col)
+            values (?, (select title from todo where id = ?), (select title from col where id = ?), (select title from col where id = ?));
+          `,
+          [action, todoId, fromColId, toColId]
+        )
+      )
+      .then(([rows, field]) => {
+        if (rows.affectedRows === 1) resolve();
+        else reject(new Error('number of affected rows not One'));
+      })
+      .catch((e) => reject(e))
+      .finally(() => conn.end());
+  });
+}
+
 export default {
   getAllColumnsAndTodos,
   postTodo,
   putTodo,
   deleteTodo,
   getAllHistory,
+  postHistory,
 };
