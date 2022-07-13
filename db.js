@@ -8,11 +8,4 @@ const connection = mysql.createConnection({
 });
 
 // 초기 테스트용 임시 함수. 나중에 지워도 됨.
-export function showDatabases() {
-  connection.connect();
-  connection.query('SHOW DATABASES', function (error, results, fields) {
-    if (error) throw error;
-    console.log(results);
-  });
-  connection.end();
-}
+export default connection;
