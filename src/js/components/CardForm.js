@@ -23,10 +23,10 @@ export default class {
       .addEventListener('click', this.confirmSubmit.bind(this));
     this.$element
       .querySelector('.card-form-title')
-      .addEventListener('change', this.checkInputNotEmpty.bind(this));
+      .addEventListener('input', this.checkInputNotEmpty.bind(this));
     this.$element
       .querySelector('.card-form-content')
-      .addEventListener('change', this.checkInputNotEmpty.bind(this));
+      .addEventListener('input', this.checkInputNotEmpty.bind(this));
   }
 
   cancelSubmit(e) {
