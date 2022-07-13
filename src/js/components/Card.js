@@ -23,6 +23,7 @@ export default class {
     $deleteBtn.addEventListener('mouseover', this.turnOnDanger.bind(this));
     $deleteBtn.addEventListener('mouseout', this.turnOffDanger.bind(this));
     this.$element.addEventListener('dblclick', this.updateCard.bind(this));
+    this.$element.addEventListener('mousedown', this.dragStart.bind(this));
   }
 
   deleteCard() {
@@ -41,6 +42,50 @@ export default class {
   turnOffDanger() {
     const $card = this.$element;
     view.turnOffCardDanger($card);
+  }
+
+  setCardInitialPosition() {
+    const rect = this.$element.getBoundingClientRect();
+    this.$element.style.top = `${rect.top}px`;
+    this.$element.style.left = `${rect.left}px`;
+  }
+
+  replaceCardWithSkeleton() {
+    const $skeleton = this.$element.cloneNode(true);
+    $skeleton.classList.add('skeleton');
+    this.$element.replaceWith($skeleton);
+    $skeleton.parentNode.insertBefore(this.$element, $skeleton);
+  }
+
+  dragStart(event) {
+    if (event.target.closest('.card-header-delete')) return;
+
+    this.setCardInitialPosition();
+    this.replaceCardWithSkeleton();
+    this.$element.classList.add('moving');
+
+    const dragStartPosition = { x: event.clientX, y: event.clientY };
+    const dragEvent = (event) => {
+      this.drag(event, dragStartPosition);
+    };
+    window.addEventListener('mousemove', dragEvent);
+    window.onmouseup = (event) => {
+      this.dragEnd(event);
+      window.removeEventListener('mousemove', dragEvent);
+      window.onmouseup = null;
+    };
+  }
+
+  drag(event, dragStartPosition) {
+    const xDiff = event.clientX - dragStartPosition.x;
+    const yDiff = event.clientY - dragStartPosition.y;
+    this.$element.style.transform = `translate(${xDiff}px, ${yDiff}px)`;
+  }
+
+  dragEnd() {
+    this.$element.removeAttribute('style');
+    document.querySelector('.skeleton').remove();
+    this.$element.classList.remove('moving');
   }
 
   getTitle() {
