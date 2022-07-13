@@ -74,4 +74,18 @@ function putTodo(req, res) {
     });
 }
 
-export default { getAllColumnsAndTodos, postTodo, putTodo };
+function deleteTodo(req, res) {
+  const { id } = req.body;
+
+  dao
+    .deleteTodo(id)
+    .then(() => {
+      res.status(200).send();
+    })
+    .catch((e) => {
+      console.log(e);
+      res.status(500).send(e);
+    });
+}
+
+export default { getAllColumnsAndTodos, postTodo, putTodo, deleteTodo };

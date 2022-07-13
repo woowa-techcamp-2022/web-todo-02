@@ -70,4 +70,29 @@ function putTodo(id, title, content) {
   });
 }
 
-export default { getAllColumnsAndTodos, postTodo, putTodo };
+function deleteTodo(id) {
+  let conn;
+
+  return new Promise((resolve, reject) => {
+    getConnection()
+      .then((connection) => (conn = connection))
+      .then((conn) =>
+        conn.execute(
+          `
+          delete
+          from todo
+          where id = ?;
+        `,
+          [id]
+        )
+      )
+      .then(([rows, field]) => {
+        if (rows.affectedRows === 1) resolve();
+        else reject(new Error('number of changed rows not One'));
+      })
+      .catch((e) => reject(e))
+      .finally(() => conn.end());
+  });
+}
+
+export default { getAllColumnsAndTodos, postTodo, putTodo, deleteTodo };
