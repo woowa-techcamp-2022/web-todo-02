@@ -96,8 +96,8 @@ html {
 }
 
 .card.danger {
-  border: 1px solid red;
   background-color: rgba(255, 0, 0, 0.1);
+  box-shadow: 0px 0px 0px 1px red;
 }
 
 .card-header {
