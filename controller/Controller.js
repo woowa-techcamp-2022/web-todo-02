@@ -25,15 +25,13 @@ function getAllColumnsAndTodos(req, res) {
           });
         }
 
-        result
-          .get(id)
-          .todos.push({
-            id: todoId,
-            title: todoTitle,
-            content: todoContent,
-            order: todoOrder,
-            updated: orderUpdated,
-          });
+        result.get(id).todos.push({
+          id: todoId,
+          title: todoTitle,
+          content: todoContent,
+          order: todoOrder,
+          updated: orderUpdated,
+        });
       });
 
       res.status(200).send(Array.from(result.values()));
@@ -65,15 +63,16 @@ function postTodo(req, res) {
 }
 
 function putTodo(req, res) {
-  const { id, title, content } = req.body;
+  const { id, title, content, position, columnId } = req.body;
 
   dao
-    .putTodo(id, title, content)
+    .putTodo(id, title, content, position, columnId)
     .then(() => {
       res.status(200).send({
         id,
         title,
         content,
+        columnId,
       });
     })
     .catch((e) => {

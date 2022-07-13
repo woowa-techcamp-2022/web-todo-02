@@ -46,7 +46,7 @@ function postTodo(id, title, content, columnId) {
   });
 }
 
-function putTodo(id, title, content) {
+function putTodo(id, title, content, position, columnId) {
   let conn;
 
   return new Promise((resolve, reject) => {
@@ -56,10 +56,12 @@ function putTodo(id, title, content) {
         conn.execute(
           `
           update todo
-          set title = ?, content = ?
+          set title = ?, content = ?,
+              pos_updated_time = case when (col_id = ? and pos = ?) then pos_updated_time else current_timestamp end,
+              pos = ?, col_id = ?
           where id = ?;
           `,
-          [title, content, id]
+          [title, content, columnId, position, position, columnId, id]
         )
       )
       .then(([rows, field]) => {
