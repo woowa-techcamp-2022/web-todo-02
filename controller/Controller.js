@@ -13,6 +13,8 @@ function getAllColumnsAndTodos(req, res) {
           todo_id: todoId,
           todo_title: todoTitle,
           todo_content: todoContent,
+          todo_order: todoOrder,
+          todo_pos_updated: orderUpdated,
         } = data;
 
         if (!result.has(id)) {
@@ -25,7 +27,13 @@ function getAllColumnsAndTodos(req, res) {
 
         result
           .get(id)
-          .todos.push({ id: todoId, title: todoTitle, content: todoContent });
+          .todos.push({
+            id: todoId,
+            title: todoTitle,
+            content: todoContent,
+            order: todoOrder,
+            updated: orderUpdated,
+          });
       });
 
       res.status(200).send(Array.from(result.values()));
