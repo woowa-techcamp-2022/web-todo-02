@@ -10,21 +10,16 @@ export default class {
 
     this.$element.classList.add('card');
     this.render();
-
     /* attach event listener */
     this.initEvents();
   }
 
   initEvents() {
-    this.$element
-      .querySelector('.card-header-delete')
-      .addEventListener('click', this.deleteCard.bind(this));
-    this.$element
-      .querySelector('.card-header-delete')
-      .addEventListener('mouseover', this.turnOnDanger.bind(this));
-    this.$element
-      .querySelector('.card-header-delete')
-      .addEventListener('mouseout', this.turnOffDanger.bind(this));
+    const $deleteBtn = this.$element.querySelector('.card-header-delete');
+
+    $deleteBtn.addEventListener('click', this.deleteCard.bind(this));
+    $deleteBtn.addEventListener('mouseover', this.turnOnDanger.bind(this));
+    $deleteBtn.addEventListener('mouseout', this.turnOffDanger.bind(this));
     this.$element.addEventListener('dblclick', this.updateCard.bind(this));
   }
 
