@@ -15,14 +15,14 @@ class View {
     $main.appendChild($column);
   }
 
-  addCard(columnId, title, content) {
+  addCard(columnId, cardId, title, content) {
     const $columns = document.querySelectorAll('.column');
     $columns.forEach(($column) => {
       const id = $column.dataset.id;
 
       if (id === columnId) {
         const $cardList = $column.querySelector('.column-cards');
-        $cardList.appendChild(new Card(title, content).getElement());
+        $cardList.appendChild(new Card(cardId, title, content).getElement());
       }
     });
   }
@@ -38,7 +38,7 @@ class View {
   }
 
   confirmCardFormSubmit($column, $cardForm, title, content) {
-    const $card = new Card(title, content);
+    const $card = new Card('fixme', title, content);
 
     $column.classList.remove('adding');
     $cardForm.replaceWith($card.getElement());

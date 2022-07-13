@@ -1,14 +1,16 @@
 import view from '../view.js';
 
 export default class {
-  constructor(title, content) {
+  constructor(id, title, content) {
     this.$element = document.createElement('li');
     this.state = {
+      id,
       title,
       content,
     };
 
     this.$element.classList.add('card');
+    this.$element.setAttribute('data-id', id);
     this.render();
     /* attach event listener */
     this.initEvents();
