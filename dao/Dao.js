@@ -22,7 +22,7 @@ function getAllColumnsAndTodos() {
   });
 }
 
-function addTodo(id, title, content, columnId) {
+function postTodo(id, title, content, columnId) {
   let conn;
 
   return new Promise((resolve, reject) => {
@@ -45,4 +45,4 @@ function addTodo(id, title, content, columnId) {
   });
 }
 
-export default { getAllColumnsAndTodos, addTodo };
+export default { getAllColumnsAndTodos, postTodo };

@@ -3,4 +3,4 @@ import controller from '../controller/Controller.js';
 
 export const todoRouter = express.Router();
 
-todoRouter.post('/', controller.addTodo);
+todoRouter.post('/', controller.postTodo);

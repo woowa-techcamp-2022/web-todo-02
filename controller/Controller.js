@@ -36,12 +36,12 @@ function getAllColumnsAndTodos(req, res) {
     });
 }
 
-function addTodo(req, res) {
+function postTodo(req, res) {
   const { id: columnId, title, content } = req.body;
   const todoId = getUniqueId();
 
   dao
-    .addTodo(todoId, title, content, columnId)
+    .postTodo(todoId, title, content, columnId)
     .then(() => {
       res.status(200).send({
         id: todoId,
@@ -56,4 +56,4 @@ function addTodo(req, res) {
     });
 }
 
-export default { getAllColumnsAndTodos, addTodo };
+export default { getAllColumnsAndTodos, postTodo };
