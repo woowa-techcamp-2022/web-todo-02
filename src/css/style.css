@@ -56,6 +56,10 @@ html {
   border-radius: 10px;
 }
 
+.card.moving {
+  user-select: none;
+}
+
 .card.skeleton {
   opacity: 0.4;
   box-shadow: 0px 0px 0px 1px #0075de;
