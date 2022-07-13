@@ -88,4 +88,22 @@ function deleteTodo(req, res) {
     });
 }
 
-export default { getAllColumnsAndTodos, postTodo, putTodo, deleteTodo };
+function getAllHistory(req, res) {
+  dao
+    .getAllHistory()
+    .then((datas) => {
+      res.status(200).send(datas);
+    })
+    .catch((e) => {
+      console.log(e);
+      res.status(500).send(e);
+    });
+}
+
+export default {
+  getAllColumnsAndTodos,
+  postTodo,
+  putTodo,
+  deleteTodo,
+  getAllHistory,
+};

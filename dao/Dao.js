@@ -95,4 +95,33 @@ function deleteTodo(id) {
   });
 }
 
-export default { getAllColumnsAndTodos, postTodo, putTodo, deleteTodo };
+function getAllHistory() {
+  let conn;
+
+  return new Promise((resolve, reject) => {
+    getConnection()
+      .then((connection) => (conn = connection))
+      .then((conn) =>
+        conn.execute(
+          `
+            select *
+            from hist
+            order by created_time desc;
+          `
+        )
+      )
+      .then(([rows, field]) => {
+        resolve(rows);
+      })
+      .catch((e) => reject(e))
+      .finally(() => conn.end());
+  });
+}
+
+export default {
+  getAllColumnsAndTodos,
+  postTodo,
+  putTodo,
+  deleteTodo,
+  getAllHistory,
+};
