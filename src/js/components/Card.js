@@ -53,8 +53,7 @@ export default class {
   replaceCardWithSkeleton() {
     const $skeleton = this.$element.cloneNode(true);
     $skeleton.classList.add('skeleton');
-    this.$element.replaceWith($skeleton);
-    $skeleton.parentNode.insertBefore(this.$element, $skeleton);
+    this.$element.parentNode.insertBefore($skeleton, this.$element);
   }
 
   dragStart(event) {
