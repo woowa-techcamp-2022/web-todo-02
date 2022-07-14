@@ -34,9 +34,11 @@ export default class {
   }
 
   deleteCard() {
-    controller.deleteCard(this.$element.dataset.id).then(() => {
-      view.removeElement(this.$element);
-    });
+    if (window.confirm('선택한 카드를 삭제할까요?')) {
+      controller.deleteCard(this.$element.dataset.id).then(() => {
+        view.removeElement(this.$element);
+      });
+    }
   }
 
   replaceCardWithCardForm() {
