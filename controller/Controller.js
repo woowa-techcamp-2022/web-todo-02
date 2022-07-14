@@ -38,9 +38,8 @@ function getAllColumnsAndTodos(req, res) {
 
       res.status(200).send(Array.from(result.values()));
     })
-    .catch((e) => {
-      console.log(e);
-      res.status(500).send(e);
+    .catch(() => {
+      res.status(500).send();
     });
 }
 
@@ -58,9 +57,8 @@ function postTodo(req, res) {
         columnId,
       });
     })
-    .catch((e) => {
-      console.log(e);
-      res.status(500).send(e);
+    .catch(() => {
+      res.status(500).send();
     });
 }
 
@@ -77,9 +75,8 @@ function putTodo(req, res) {
         columnId,
       });
     })
-    .catch((e) => {
-      console.log(e);
-      res.status(500).send(e);
+    .catch(() => {
+      res.status(500).send();
     });
 }
 
@@ -95,9 +92,8 @@ function moveTodo(req, res) {
         columnId,
       });
     })
-    .catch((e) => {
-      console.log(e);
-      res.status(500).send(e);
+    .catch(() => {
+      res.status(500).send();
     });
 }
 
@@ -109,9 +105,8 @@ function deleteTodo(req, res) {
     .then(() => {
       res.status(200).send();
     })
-    .catch((e) => {
-      console.log(e);
-      res.status(500).send(e);
+    .catch(() => {
+      res.status(500).send();
     });
 }
 
@@ -121,9 +116,8 @@ function getAllHistory(req, res) {
     .then((datas) => {
       res.status(200).send(datas);
     })
-    .catch((e) => {
-      console.log(e);
-      res.status(500).send(e);
+    .catch(() => {
+      res.status(500).send();
     });
 }
 
