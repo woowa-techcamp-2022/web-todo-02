@@ -8,13 +8,17 @@ export default class {
       id,
     };
 
+    this.init();
+  }
+
+  init() {
     this.$element.classList.add('column');
     this.$element.setAttribute('data-id', this.state.id);
     this.render();
-    this.initEvents();
+    this.attachEvents();
   }
 
-  initEvents() {
+  attachEvents() {
     this.$element
       .querySelector('.column-header-add')
       .addEventListener('click', () => {

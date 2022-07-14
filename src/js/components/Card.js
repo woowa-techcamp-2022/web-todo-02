@@ -10,14 +10,17 @@ export default class {
       content,
     };
 
-    this.$element.classList.add('card');
-    this.$element.setAttribute('data-id', id);
-    this.render();
-    /* attach event listener */
-    this.initEvents();
+    this.init();
   }
 
-  initEvents() {
+  init() {
+    this.$element.classList.add('card');
+    this.$element.setAttribute('data-id', this.state.id);
+    this.render();
+    this.attachEvents();
+  }
+
+  attachEvents() {
     const $deleteBtn = this.$element.querySelector('.card-header-delete');
 
     $deleteBtn.addEventListener('click', this.deleteCard.bind(this));

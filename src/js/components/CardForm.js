@@ -8,13 +8,16 @@ export default class {
       content,
     };
 
-    this.$element.classList.add('card');
-    this.render();
-    /* attach event listener */
-    this.initEvents();
+    this.init();
   }
 
-  initEvents() {
+  init() {
+    this.$element.classList.add('card');
+    this.render();
+    this.attachEvents();
+  }
+
+  attachEvents() {
     this.$element
       .querySelector('.card-form-cancelbtn')
       .addEventListener('click', this.cancelSubmit.bind(this));
