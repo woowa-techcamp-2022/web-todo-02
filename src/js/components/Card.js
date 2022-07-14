@@ -36,6 +36,8 @@ export default class {
   deleteCard() {
     if (window.confirm('선택한 카드를 삭제할까요?')) {
       controller.deleteCard(this.$element.dataset.id).then(() => {
+        const columnId = this.$element.closest('.column').dataset.id;
+        view.removeColumnCardsCount(columnId);
         view.removeElement(this.$element);
       });
     }
@@ -189,14 +191,21 @@ export default class {
     const $skeleton = this.getSkeleton();
     // dblclick 이벤트를 감지하기 위해 잔상 카드가 이동했을 때만 엘리먼트와 교체해주도록 함
     if ($skeleton.classList.contains('changed')) {
+      const $originalColumn = this.$element.closest('.column');
+      const $newColumn = $skeleton.closest('.column');
+      const originalColumnId = $originalColumn.dataset.id;
+      const newColumnId = $newColumn.dataset.id;
+
       controller
-        .moveCard(
-          this.state.id,
-          this.getDestinationPosition(),
-          $skeleton.closest('.column').dataset.id
-        )
-        .then($skeleton.replaceWith(this.$element))
-        .catch($skeleton.remove());
+        .moveCard(this.state.id, this.getDestinationPosition(), newColumnId)
+        .then(() => {
+          view.removeColumnCardsCount(originalColumnId);
+          view.addColumnCardsCount(newColumnId);
+          $skeleton.replaceWith(this.$element);
+        })
+        .catch(() => {
+          $skeleton.remove();
+        });
     } else {
       $skeleton.remove();
     }
