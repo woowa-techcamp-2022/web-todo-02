@@ -48,8 +48,10 @@ export default class {
   render() {
     this.$element.innerHTML = `
         <div class="column-header">
-            <h2 class="column-header-title">${this.state.title}</h2>
-            <div class="column-header-counter">0</div>
+            <div>
+                <h2 class="column-header-title">${this.state.title}</h2>
+                <div class="column-header-counter">0</div>
+            </div>
             <div> 
                 <button class="column-header-add">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none"

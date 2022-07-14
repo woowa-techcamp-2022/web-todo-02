@@ -12,11 +12,12 @@ class Controller {
   initAllColumns() {
     model.getAllColumns().then((columns) => {
       columns.forEach((column) => {
-        const { id, title, todos } = column;
-        view.appendColumn(id, title);
+        const { id: columnId, title, todos } = column;
+        view.appendColumn(columnId, title);
         todos.forEach((todo) => {
-          view.appendCard(id, todo.id, todo.title, todo.content);
+          view.appendCard(columnId, todo.id, todo.title, todo.content);
         });
+        view.setColumnCardsCount(columnId, todos.length);
       });
     });
   }

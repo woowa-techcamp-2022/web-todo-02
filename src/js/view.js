@@ -41,6 +41,26 @@ class View {
     });
   }
 
+  getColumnCardsCounter(columnId) {
+    const selector = `.column[data-id="${columnId}"] .column-header-counter`;
+    return document.querySelector(selector);
+  }
+
+  setColumnCardsCount(columnId, count) {
+    const $counter = this.getColumnCardsCounter(columnId);
+    $counter.innerHTML = count;
+  }
+
+  addColumnCardsCount(columnId) {
+    const $counter = this.getColumnCardsCounter(columnId);
+    $counter.innerHTML++;
+  }
+
+  removeColumnCardsCount(columnId) {
+    const $counter = this.getColumnCardsCounter(columnId);
+    $counter.innerHTML--;
+  }
+
   addCardForm($column, $cardList) {
     this.addClass($column, 'adding');
     $cardList.insertBefore(
@@ -56,8 +76,10 @@ class View {
   }
 
   addCard($column, $cardForm, title, content) {
-    controller.addCard($column.dataset.id, title, content).then((cardId) => {
+    const columnId = $column.dataset.id;
+    controller.addCard(columnId, title, content).then((cardId) => {
       this.replaceCardFormWithCard(cardId, $column, $cardForm, title, content);
+      this.addColumnCardsCount(columnId);
       this.addHistory();
     });
   }
