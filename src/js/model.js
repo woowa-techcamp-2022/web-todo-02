@@ -44,6 +44,10 @@ class Model {
       body: JSON.stringify({ cardId, position, columnId }),
     }).then((res) => res.json());
   }
+
+  getHistory() {
+    return fetch('/history').then((res) => res.json());
+  }
 }
 
 const model = new Model();

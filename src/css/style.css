@@ -34,7 +34,7 @@ body {
   align-items: center;
 }
 
-.column-header > div {
+.column-header>div {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -162,6 +162,7 @@ body {
 .card-header-delete svg path {
   fill: rgb(150, 150, 150);
 }
+
 .column-header-add:hover svg path {
   fill: blue;
 }
@@ -202,6 +203,7 @@ body {
   width: 100%;
   height: 100%;
   background-color: rgb(221, 255, 232);
+  overflow-y: auto;
 }
 
 .history-card {
@@ -215,6 +217,10 @@ body {
 
 .history-card-title {
   font-size: 20px;
+  text-align: center;
+  width: 300px;
+  white-space: pre-wrap;
+  word-break: keep-all;
 }
 
 .history-card-time {

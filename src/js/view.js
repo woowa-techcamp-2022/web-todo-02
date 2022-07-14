@@ -1,6 +1,7 @@
 import Card from './components/Card.js';
 import CardForm from './components/CardForm.js';
 import Column from './components/Column.js';
+import History from './components/History.js';
 import controller from './Controller.js';
 
 class View {
@@ -57,6 +58,7 @@ class View {
   addCard($column, $cardForm, title, content) {
     controller.addCard($column.dataset.id, title, content).then((cardId) => {
       this.replaceCardFormWithCard(cardId, $column, $cardForm, title, content);
+      this.addHistory();
     });
   }
 
@@ -69,6 +71,7 @@ class View {
         title,
         content
       );
+      this.addHistory();
     });
   }
 
@@ -104,11 +107,22 @@ class View {
   }
 
   displaySidebar() {
-    document.querySelector('#aside').classList.add('show')
+    document.querySelector('#aside').classList.add('show');
+    this.addHistory();
   }
 
   hideSidebar() {
-    document.querySelector('#aside').classList.remove('show')
+    document.querySelector('#aside').classList.remove('show');
+  }
+
+  addHistory() {
+    const $historyColumn = document.querySelector('#aside-history-column');
+    controller.getHistory().then((histories) => {
+      $historyColumn.innerHTML = '';
+      histories.forEach((history) =>
+        $historyColumn.appendChild(new History(history).getElement())
+      );
+    });
   }
 }
 

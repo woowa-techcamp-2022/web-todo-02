@@ -37,6 +37,7 @@ export default class {
     if (window.confirm('선택한 카드를 삭제할까요?')) {
       controller.deleteCard(this.$element.dataset.id).then(() => {
         view.removeElement(this.$element);
+        view.addHistory();
       });
     }
   }
@@ -186,8 +187,11 @@ export default class {
           this.getDestinationPosition(),
           $skeleton.closest('.column').dataset.id
         )
-        .then($skeleton.replaceWith(this.$element))
-        .catch($skeleton.remove());
+        .then(() => {
+          $skeleton.replaceWith(this.$element);
+          view.addHistory();
+        })
+        .catch(() => $skeleton.remove());
     } else {
       $skeleton.remove();
     }

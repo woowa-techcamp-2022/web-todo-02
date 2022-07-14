@@ -22,9 +22,14 @@ class Controller {
   }
 
   initDefaultEvent() {
-    document.querySelector('#header-menubtn').addEventListener('click', view.displaySidebar);
-    document.querySelector('#aside-history-closebtn').addEventListener('click', view.hideSidebar);
-    document.querySelector('#aside-background').addEventListener('click', view.hideSidebar);
+    document.querySelector('#header-menubtn').addEventListener('click', () => {
+      view.displaySidebar();
+    });
+    document
+      .querySelector('#aside-history-closebtn')
+      .addEventListener('click', () => {
+        view.hideSidebar();
+      });
   }
 
   addCard(columnId, title, content) {
@@ -55,6 +60,14 @@ class Controller {
     return new Promise((resolve, reject) => {
       model.moveCard(cardId, position, columnId).then(() => {
         resolve();
+      });
+    });
+  }
+
+  getHistory() {
+    return new Promise((resolve, reject) => {
+      model.getHistory().then((histories) => {
+        resolve(histories);
       });
     });
   }
