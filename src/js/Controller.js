@@ -58,6 +58,14 @@ class Controller {
       });
     });
   }
+
+  getHistory() {
+    return new Promise((resolve, reject) => {
+      model.getHistory().then((histories) => {
+        resolve(histories);
+      });
+    });
+  }
 }
 
 const controllerInstance = new Controller();
