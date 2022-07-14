@@ -25,7 +25,10 @@ export default class {
     $deleteBtn.addEventListener('click', this.deleteCard.bind(this));
     $deleteBtn.addEventListener('mouseover', this.turnOnDanger.bind(this));
     $deleteBtn.addEventListener('mouseout', this.turnOffDanger.bind(this));
-    this.$element.addEventListener('dblclick', this.updateCard.bind(this));
+    this.$element.addEventListener(
+      'dblclick',
+      this.replaceCardWithCardForm.bind(this)
+    );
     this.$element.addEventListener('mousedown', this.dragStart.bind(this));
   }
 
@@ -33,7 +36,7 @@ export default class {
     view.removeElement(this.$element);
   }
 
-  updateCard() {
+  replaceCardWithCardForm() {
     view.replaceCardWithCardForm(
       this.$element,
       this.getTitle(),
