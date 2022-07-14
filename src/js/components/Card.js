@@ -109,9 +109,9 @@ export default class {
   }
 
   setMouseEnterEventToAllCards() {
-    this.getAllCardsWithoutMovingCard().forEach(($card) => {
-      $card.onmouseenter = (event) => {
-        const newColumnId = $card.closest('.column').dataset.id;
+    this.getAllCardsWithoutMovingCard().forEach(($staticCard) => {
+      $staticCard.onmouseenter = (event) => {
+        const newColumnId = $staticCard.closest('.column').dataset.id;
         if (this.$element.dataset.columnId === newColumnId) {
           this.replaceCardWithSkeleton(event);
         } else {
