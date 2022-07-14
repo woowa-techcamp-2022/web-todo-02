@@ -1,4 +1,4 @@
-import view from '../view.js';
+import view from '../View.js';
 
 export default class {
   constructor(id, title) {
@@ -8,13 +8,17 @@ export default class {
       id,
     };
 
-    this.$element.classList.add('column');
-    this.$element.setAttribute('data-id', this.state.id);
-    this.render();
-    this.initEvents();
+    this.init();
   }
 
-  initEvents() {
+  init() {
+    this.$element.className = 'column';
+    this.$element.setAttribute('data-id', this.state.id);
+    this.render();
+    this.attachEvents();
+  }
+
+  attachEvents() {
     this.$element
       .querySelector('.column-header-add')
       .addEventListener('click', () => {
@@ -32,10 +36,9 @@ export default class {
   }
 
   removeCardForm() {
-    const $column = this.$element.closest('.column');
-    const $cardList = $column.querySelector('.column-cards');
-
-    view.removeCardForm($column, $cardList);
+    const $cardList = this.$element.querySelector('.column-cards');
+    view.removeClass(this.$element, 'adding');
+    view.removeElement($cardList.firstChild);
   }
 
   getElement() {

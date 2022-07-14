@@ -1,7 +1,7 @@
 * {
   margin: 0;
   padding: 0;
-  box-sizing: content-box;
+  box-sizing: border-box;
 }
 
 button {
@@ -15,6 +15,7 @@ button:disabled {
 }
 
 ul,
-ol {
+ol,
+li {
   list-style: none;
 }

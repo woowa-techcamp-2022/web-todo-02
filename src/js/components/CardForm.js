@@ -1,20 +1,27 @@
-import view from '../view.js';
+import view from '../View.js';
 
 export default class {
-  constructor(title = '', content = '') {
+  constructor(action, id = '', title = '', content = '') {
     this.$element = document.createElement('li');
     this.state = {
+      action,
+      id,
       title,
       content,
     };
 
-    this.$element.classList.add('card');
-    this.render();
-    /* attach event listener */
-    this.initEvents();
+    this.init();
   }
 
-  initEvents() {
+  init() {
+    this.$element.className = 'card';
+    this.$element.dataset.id = this.state.id;
+    this.$element.dataset.action = this.state.action;
+    this.render();
+    this.attachEvents();
+  }
+
+  attachEvents() {
     this.$element
       .querySelector('.card-form-cancelbtn')
       .addEventListener('click', this.cancelSubmit.bind(this));
@@ -58,12 +65,12 @@ export default class {
 
   activateSubmit() {
     const $submitBtn = this.$element.querySelector('.card-form-submitbtn');
-    view.activateBtn($submitBtn);
+    $submitBtn.removeAttribute('disabled');
   }
 
   deactivateSubmit() {
     const $submitBtn = this.$element.querySelector('.card-form-submitbtn');
-    view.deactivateBtn($submitBtn);
+    $submitBtn.setAttribute('disabled', true);
   }
 
   getTitle() {

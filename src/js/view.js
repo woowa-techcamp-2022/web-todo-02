@@ -1,6 +1,7 @@
 import Card from './components/Card.js';
 import CardForm from './components/CardForm.js';
 import Column from './components/Column.js';
+import controller from './Controller.js';
 
 class View {
   constructor() {}
@@ -9,13 +10,25 @@ class View {
     $element.remove();
   }
 
-  addColumn(id, title) {
+  insertAfter($newNode, $existingNode) {
+    $existingNode.parentNode.insertBefore($newNode, $existingNode.nextSibling);
+  }
+
+  addClass($element, className) {
+    $element.classList.add(className);
+  }
+
+  removeClass($element, className) {
+    $element.classList.remove(className);
+  }
+
+  appendColumn(id, title) {
     const $main = document.querySelector('#main');
     const $column = new Column(id, title).getElement();
     $main.appendChild($column);
   }
 
-  addCard(columnId, cardId, title, content) {
+  appendCard(columnId, cardId, title, content) {
     const $columns = document.querySelectorAll('.column');
     $columns.forEach(($column) => {
       const id = $column.dataset.id;
@@ -28,25 +41,49 @@ class View {
   }
 
   addCardForm($column, $cardList) {
-    $column.classList.add('adding');
-    $cardList.insertBefore(new CardForm().getElement(), $cardList.firstChild);
+    this.addClass($column, 'adding');
+    $cardList.insertBefore(
+      new CardForm('add').getElement(),
+      $cardList.firstChild
+    );
   }
 
-  removeCardForm($column, $cardList) {
-    $column.classList.remove('adding');
-    this.removeElement($cardList.firstChild);
+  replaceCardFormWithCard(cardId, $column, $cardForm, title, content) {
+    this.removeClass($column, 'adding');
+    const $card = new Card(cardId, title, content);
+    $cardForm.replaceWith($card.getElement());
+  }
+
+  addCard($column, $cardForm, title, content) {
+    controller.addCard($column.dataset.id, title, content).then((cardId) => {
+      this.replaceCardFormWithCard(cardId, $column, $cardForm, title, content);
+    });
+  }
+
+  updateCard($column, $cardForm, title, content) {
+    controller.updateCard($column.dataset.id, title, content).then(() => {
+      this.replaceCardFormWithCard(
+        $cardForm.dataset.id,
+        $column,
+        $cardForm,
+        title,
+        content
+      );
+    });
   }
 
   confirmCardFormSubmit($column, $cardForm, title, content) {
-    const $card = new Card('fixme', title, content);
-
-    $column.classList.remove('adding');
-    $cardForm.replaceWith($card.getElement());
+    const { action } = $cardForm.dataset;
+    if (action === 'add') {
+      this.addCard($column, $cardForm, title, content);
+    } else if (action === 'update') {
+      this.updateCard($column, $cardForm, title, content);
+    }
   }
 
   cancelCardFormSubmit($column, $cardForm) {
     if ($column.classList.contains('adding')) {
-      $column.classList.remove('adding');
+      this.removeClass($column, 'adding');
       this.removeElement($cardForm);
     } else {
       this.cancelUpdateCard($column, $cardForm);
@@ -55,24 +92,10 @@ class View {
 
   cancelUpdateCard($column, $cardForm) {}
 
-  activateBtn($button) {
-    $button.removeAttribute('disabled');
-  }
-
-  deactivateBtn($button) {
-    $button.setAttribute('disabled', true);
-  }
-
-  updateCard($card, title, content) {
-    $card.replaceWith(new CardForm(title, content).getElement());
-  }
-
-  turnOnCardDanger($card) {
-    $card.classList.add('danger');
-  }
-
-  turnOffCardDanger($card) {
-    $card.classList.remove('danger');
+  replaceCardWithCardForm($card, title, content) {
+    $card.replaceWith(
+      new CardForm('update', $card.dataset.id, title, content).getElement()
+    );
   }
 }
 

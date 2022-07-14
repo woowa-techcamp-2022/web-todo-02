@@ -2,6 +2,11 @@ html {
   background-color: rgb(225, 225, 225);
 }
 
+html,
+body {
+  height: 100%;
+}
+
 #header {
   display: flex;
   align-items: center;
@@ -13,11 +18,15 @@ html {
   display: flex;
   flex-direction: row;
   gap: 15px;
+  /* 86.5px: 헤더 높이 */
+  height: calc(100% - 86.5px);
   padding: var(--padding-outer);
 }
 
 .column {
-  width: 300px;
+  overflow: auto;
+  min-width: 300px;
+  padding: 0 6px;
 }
 
 .column-header {
@@ -42,11 +51,37 @@ html {
   margin-left: 5px;
 }
 
+.column-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px 0;
+  /* 32px: 컬럼 헤더 높이 */
+  height: calc(100% - 32px);
+}
+
 .card {
+  width: 300px;
   padding: 12px 20px;
-  margin: 10px 0;
   background-color: white;
   border-radius: 10px;
+}
+
+.card.skeleton {
+  opacity: 0.4;
+  box-shadow: 0px 0px 0px 1px #0075de;
+}
+
+.card.skeleton .card-header-delete {
+  display: none;
+}
+
+.card.moving {
+  user-select: none;
+  z-index: 99;
+  position: absolute;
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0px 2px 4px 0px #00000040;
 }
 
 .card-form {
@@ -61,8 +96,12 @@ html {
 }
 
 .card-form input[name='title'] {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
+}
+
+.card-form input[name='content'] {
+  font-size: 16px;
 }
 
 .card-form-buttons {
