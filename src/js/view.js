@@ -1,6 +1,7 @@
 import Card from './components/Card.js';
 import CardForm from './components/CardForm.js';
 import Column from './components/Column.js';
+import controller from './Controller.js';
 
 class View {
   constructor() {}
@@ -9,13 +10,13 @@ class View {
     $element.remove();
   }
 
-  addColumn(id, title) {
+  appendColumn(id, title) {
     const $main = document.querySelector('#main');
     const $column = new Column(id, title).getElement();
     $main.appendChild($column);
   }
 
-  addCard(columnId, cardId, title, content) {
+  appendCard(columnId, cardId, title, content) {
     const $columns = document.querySelectorAll('.column');
     $columns.forEach(($column) => {
       const id = $column.dataset.id;
@@ -27,9 +28,18 @@ class View {
     });
   }
 
+  deleteCard($card) {
+    controller.deleteCard($card.dataset.id).then(() => {
+      this.removeElement($card);
+    });
+  }
+
   addCardForm($column, $cardList) {
     $column.classList.add('adding');
-    $cardList.insertBefore(new CardForm().getElement(), $cardList.firstChild);
+    $cardList.insertBefore(
+      new CardForm('add').getElement(),
+      $cardList.firstChild
+    );
   }
 
   removeCardForm($column, $cardList) {
@@ -37,11 +47,35 @@ class View {
     this.removeElement($cardList.firstChild);
   }
 
-  confirmCardFormSubmit($column, $cardForm, title, content) {
-    const $card = new Card('fixme', title, content);
-
+  replaceCardFormWithCard(cardId, $column, $cardForm, title, content) {
     $column.classList.remove('adding');
+    const $card = new Card(cardId, title, content);
     $cardForm.replaceWith($card.getElement());
+  }
+
+  confirmCardFormSubmit($column, $cardForm, title, content) {
+    const { action } = $cardForm.dataset;
+    if (action === 'add') {
+      controller.addCard($column.dataset.id, title, content).then((cardId) => {
+        this.replaceCardFormWithCard(
+          cardId,
+          $column,
+          $cardForm,
+          title,
+          content
+        );
+      });
+    } else if (action === 'update') {
+      controller.updateCard($column.dataset.id, title, content).then(() => {
+        this.replaceCardFormWithCard(
+          $cardForm.dataset.id,
+          $column,
+          $cardForm,
+          title,
+          content
+        );
+      });
+    }
   }
 
   cancelCardFormSubmit($column, $cardForm) {
@@ -63,8 +97,10 @@ class View {
     $button.setAttribute('disabled', true);
   }
 
-  updateCard($card, title, content) {
-    $card.replaceWith(new CardForm(title, content).getElement());
+  replaceCardWithCardForm($card, title, content) {
+    $card.replaceWith(
+      new CardForm('update', $card.dataset.id, title, content).getElement()
+    );
   }
 
   turnOnCardDanger($card) {

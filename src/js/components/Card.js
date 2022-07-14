@@ -35,7 +35,11 @@ export default class {
   }
 
   updateCard() {
-    view.updateCard(this.$element, this.getTitle(), this.getContent());
+    view.replaceCardWithCardForm(
+      this.$element,
+      this.getTitle(),
+      this.getContent()
+    );
   }
 
   turnOnDanger() {

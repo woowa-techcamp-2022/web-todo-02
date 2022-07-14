@@ -1,9 +1,11 @@
 import view from '../view.js';
 
 export default class {
-  constructor(title = '', content = '') {
+  constructor(action, id = '', title = '', content = '') {
     this.$element = document.createElement('li');
     this.state = {
+      action,
+      id,
       title,
       content,
     };
@@ -13,6 +15,8 @@ export default class {
 
   init() {
     this.$element.classList.add('card');
+    this.$element.dataset.id = this.state.id;
+    this.$element.dataset.action = this.state.action;
     this.render();
     this.attachEvents();
   }
