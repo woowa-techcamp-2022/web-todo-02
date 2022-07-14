@@ -6,6 +6,7 @@ class Controller {
 
   init() {
     this.initAllColumns();
+    this.initDefaultEvent();
   }
 
   initAllColumns() {
@@ -19,6 +20,17 @@ class Controller {
         view.setColumnCardsCount(columnId, todos.length);
       });
     });
+  }
+
+  initDefaultEvent() {
+    document.querySelector('#header-menubtn').addEventListener('click', () => {
+      view.displaySidebar();
+    });
+    document
+      .querySelector('#aside-history-closebtn')
+      .addEventListener('click', () => {
+        view.hideSidebar();
+      });
   }
 
   addCard(columnId, title, content) {
@@ -49,6 +61,14 @@ class Controller {
     return new Promise((resolve, reject) => {
       model.moveCard(cardId, position, columnId).then(() => {
         resolve();
+      });
+    });
+  }
+
+  getHistory() {
+    return new Promise((resolve, reject) => {
+      model.getHistory().then((histories) => {
+        resolve(histories);
       });
     });
   }

@@ -39,6 +39,7 @@ export default class {
         const columnId = this.$element.closest('.column').dataset.id;
         view.removeColumnCardsCount(columnId);
         view.removeElement(this.$element);
+        view.addHistory();
       });
     }
   }
@@ -202,6 +203,7 @@ export default class {
           view.removeColumnCardsCount(originalColumnId);
           view.addColumnCardsCount(newColumnId);
           $skeleton.replaceWith(this.$element);
+          view.addHistory();
         })
         .catch(() => {
           $skeleton.remove();

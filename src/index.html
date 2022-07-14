@@ -1,31 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ToDo</title>
-    <script src="main.js" defer></script>
-    <link rel="stylesheet" href="main.css" />
-  </head>
-  <body>
-    <header id="header">
-      <h1 id="header-title">TO-DO LIST</h1>
-      <button id="header-menubtn">
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ToDo</title>
+  <script src="main.js" defer></script>
+  <link rel="stylesheet" href="main.css" />
+</head>
+
+<body>
+  <header id="header">
+    <h1 id="header-title">TO-DO LIST</h1>
+    <button id="header-menubtn">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 8V7H20V8H3ZM20 12V13H3V12H20ZM3 17H20V18H3V17Z" fill="black" />
+      </svg>
+    </button>
+  </header>
+  <aside id="aside">
+    <div id="aside-history">
+      <button id="aside-history-closebtn">
+        <svg width="30" height="30" viewBox="5 5 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path
-            d="M3 8V7H20V8H3ZM20 12V13H3V12H20ZM3 17H20V18H3V17Z"
-            fill="black"
-          />
+            d="M7.5 17.25L6.75 16.5L11.25 12L6.75 7.5L7.5 6.75L12 11.25L16.5 6.75L17.25 7.5L12.75 12L17.25 16.5L16.5 17.25L12 12.75L7.5 17.25Z"
+            fill="black" />
         </svg>
       </button>
-    </header>
-    <main id="main"></main>
-  </body>
+      <ul id="aside-history-column">
+      </ul>
+    </div>
+  </aside>
+  <main id="main"></main>
+</body>
+
 </html>
