@@ -36,7 +36,11 @@ function getAllColumnsAndTodos(req, res) {
         }
       });
 
-      res.status(200).send(Array.from(result.values()));
+      const allColumnsAndTodos = Array.from(result.values());
+      allColumnsAndTodos.forEach((column) =>
+        column.todos.sort((a, b) => b.order - a.order)
+      );
+      res.status(200).send(allColumnsAndTodos);
     })
     .catch(() => {
       res.status(500).send();
@@ -44,7 +48,7 @@ function getAllColumnsAndTodos(req, res) {
 }
 
 function postTodo(req, res) {
-  const { id: columnId, title, content } = req.body;
+  const { columnId, title, content } = req.body;
   const todoId = getUniqueId();
 
   dao
@@ -63,16 +67,14 @@ function postTodo(req, res) {
 }
 
 function putTodo(req, res) {
-  const { id, title, content, columnId } = req.body;
-
+  const { cardId: id, title, content } = req.body;
   dao
-    .putTodo(id, title, content, columnId)
+    .putTodo(id, title, content)
     .then(() => {
       res.status(200).send({
         id,
         title,
         content,
-        columnId,
       });
     })
     .catch(() => {
@@ -81,7 +83,7 @@ function putTodo(req, res) {
 }
 
 function moveTodo(req, res) {
-  const { id, position, columnId } = req.body;
+  const { cardId: id, position, columnId } = req.body;
 
   dao
     .moveTodo(id, position, columnId)
@@ -98,10 +100,10 @@ function moveTodo(req, res) {
 }
 
 function deleteTodo(req, res) {
-  const { id, columnId } = req.body;
+  const { cardId: id } = req.body;
 
   dao
-    .deleteTodo(id, columnId)
+    .deleteTodo(id)
     .then(() => {
       res.status(200).send();
     })
