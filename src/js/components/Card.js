@@ -143,7 +143,7 @@ export default class {
 
     this.setCardInitialPosition();
     this.addSkeleton();
-    view.addClass($element, ' moving');
+    view.addClass(this.$element, 'moving');
     this.setColumnId(this.$element.closest('.column').dataset.id);
     // 1. pointer-events를 none으로 설정한 이유: 카드 드래그 시 다른 카드의 mouseenter 이벤트를 감지하기 위해
     // 2. setTimeout으로 delay를 넣어준 이유: dblclick 이벤트를 감지하기 위해
