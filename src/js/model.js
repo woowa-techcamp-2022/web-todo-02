@@ -3,7 +3,10 @@ class Model {
 
   getAllColumns(callback) {
     fetch('/column')
-      .then((res) => res.json())
+      .then((res) => {
+        console.log(res);
+        return res.json();
+      })
       .then((data) => {
         callback(data);
       })

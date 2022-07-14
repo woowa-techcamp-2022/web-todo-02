@@ -86,11 +86,16 @@ class View {
       this.removeClass($column, 'adding');
       this.removeElement($cardForm);
     } else {
-      this.cancelUpdateCard($column, $cardForm);
+      this.cancelUpdateCard($cardForm);
     }
   }
 
-  cancelUpdateCard($column, $cardForm) {}
+  cancelUpdateCard($cardForm) {
+    const { id } = $cardForm.dataset;
+    const title = $cardForm.querySelector('.card-form-title').value;
+    const content = $cardForm.querySelector('.card-form-content').value;
+    $cardForm.replaceWith(new Card(id, title, content).getElement());
+  }
 
   replaceCardWithCardForm($card, title, content) {
     $card.replaceWith(
