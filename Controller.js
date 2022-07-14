@@ -5,7 +5,7 @@ function getAllColumnsAndTodos(req, res) {
   dao
     .getAllColumnsAndTodos()
     .then((dataArray) => {
-      const result = new Map();
+      const result = {};
       dataArray.forEach((data) => {
         const {
           title,
@@ -17,16 +17,16 @@ function getAllColumnsAndTodos(req, res) {
           todo_pos_updated: orderUpdated,
         } = data;
 
-        if (!result.has(id)) {
-          result.set(id, {
+        if (!result[id]) {
+          result[id] = {
             title,
             id,
             todos: [],
-          });
+          };
         }
 
         if (todoId) {
-          result.get(id).todos.push({
+          result[id].todos.push({
             id: todoId,
             title: todoTitle,
             content: todoContent,
@@ -34,9 +34,18 @@ function getAllColumnsAndTodos(req, res) {
             updated: orderUpdated,
           });
         }
+        // if (todoId) {
+        //   result.get(id).todos.push({
+        //     id: todoId,
+        //     title: todoTitle,
+        //     content: todoContent,
+        //     order: todoOrder,
+        //     updated: orderUpdated,
+        //   });
+        // }
       });
 
-      res.status(200).send(Array.from(result.values()));
+      res.status(200).send(Object.values(result));
     })
     .catch(() => {
       res.status(500).send();
@@ -79,7 +88,7 @@ function putTodo(req, res) {
 }
 
 function moveTodo(req, res) {
-  const { id, position, columnId } = req.body;
+  const { cardId: id, position, columnId } = req.body;
 
   dao
     .moveTodo(id, position, columnId)

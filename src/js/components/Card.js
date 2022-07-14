@@ -180,7 +180,14 @@ export default class {
     const $skeleton = this.getSkeleton();
     // dblclick 이벤트를 감지하기 위해 잔상 카드가 이동했을 때만 엘리먼트와 교체해주도록 함
     if ($skeleton.classList.contains('changed')) {
-      $skeleton.replaceWith(this.$element);
+      controller
+        .moveCard(
+          this.state.id,
+          this.getDestinationPosition(),
+          $skeleton.closest('.column').dataset.id
+        )
+        .then($skeleton.replaceWith(this.$element))
+        .catch($skeleton.remove());
     } else {
       $skeleton.remove();
     }
@@ -203,6 +210,15 @@ export default class {
 
   getSkeleton() {
     return document.querySelector('.skeleton');
+  }
+
+  getDestinationPosition() {
+    const $skeleton = this.getSkeleton();
+    const $cardList = $skeleton.closest('.column-cards');
+    const cards = $cardList.children;
+    const skeletonIndex = [...cards].indexOf($skeleton);
+
+    return cards.length - skeletonIndex;
   }
 
   render() {

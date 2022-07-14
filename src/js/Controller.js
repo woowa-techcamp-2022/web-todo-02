@@ -43,6 +43,14 @@ class Controller {
       });
     });
   }
+
+  moveCard(cardId, position, columnId) {
+    return new Promise((resolve, reject) => {
+      model.moveCard(cardId, position, columnId).then(() => {
+        resolve();
+      });
+    });
+  }
 }
 
 const controllerInstance = new Controller();
