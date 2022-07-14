@@ -87,7 +87,7 @@ export default class {
     const $skeleton = document.querySelector('.skeleton');
     $skeleton.classList.add('changed');
     if (event.clientY > yCenter) {
-      insertAfter($skeleton, $card);
+      view.insertAfter($skeleton, $card);
     } else {
       $card.parentNode.insertBefore($skeleton, $card);
     }
@@ -100,7 +100,7 @@ export default class {
         $skeleton.classList.add('changed');
         const newColumnId = event.target.closest('.column').dataset.id;
         this.setColumnId(newColumnId);
-        insertAfter($skeleton, $cardLists.lastChild);
+        view.insertAfter($skeleton, $cardLists.lastChild);
       };
     });
   }

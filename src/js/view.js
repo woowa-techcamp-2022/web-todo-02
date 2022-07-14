@@ -6,6 +6,10 @@ import controller from './Controller.js';
 class View {
   constructor() {}
 
+  insertAfter($newNode, $existingNode) {
+    $existingNode.parentNode.insertBefore($newNode, $existingNode.nextSibling);
+  }
+
   removeElement($element) {
     $element.remove();
   }
