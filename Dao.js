@@ -9,11 +9,11 @@ function getAllColumnsAndTodos() {
       .then((conn) =>
         conn.execute(`
         select c.title as title, c.id as id, t.id as todo_id,
-            t.title as todo_title, t.content as todo_content, t.pos as todo_order
+        t.title as todo_title, t.content as todo_content, t.pos as todo_order
         from col c
         left join todo t
-        on c.id = t.col_id
-        order by t.pos desc;`)
+        on c.id = t.col_id;
+      `)
       )
       .then(([rows, field]) => {
         resolve(rows);
@@ -41,14 +41,15 @@ function postTodo(id, title, content, columnId) {
           [id, title, content, columnId, columnId]
         )
       )
-      .then(() =>
-        postHistory({
+      .then(() => getColumnTitle(conn, id))
+      .then(([rows, fields]) => {
+        return postHistory({
           conn,
           action: 'add',
           todoTitle: title,
-          fromColId: columnId,
-        })
-      )
+          fromColTitle: rows[0].title,
+        });
+      })
       .then(() => conn.commit())
       .then(() => resolve())
       .catch(() => conn.rollback())
@@ -62,7 +63,7 @@ function moveTodo(id, pos, columnId) {
   let conn;
   let originPos;
   let originColId;
-
+  let originColTitle;
   return new Promise((resolve, reject) => {
     getConnection()
       .then((connection) => (conn = connection))
@@ -78,9 +79,9 @@ function moveTodo(id, pos, columnId) {
           // 이동하는 컬럼 카드 조정
           return conn.execute(
             `
-              update todo
-              set pos = pos + 1
-              where col_id = ? and pos >= ?;
+            update todo
+            set pos = pos + 1
+            where col_id = ? and pos >= ?;
             `,
             [columnId, position]
           );
@@ -92,16 +93,16 @@ function moveTodo(id, pos, columnId) {
                 update todo
                 set pos = pos - 1
                 where col_id = ? and pos between ? and ?;
-              `,
+                `,
               [columnId, originPos + 1, position]
             );
           } else {
             return conn.execute(
               `
-                update todo
-                set pos = pos + 1
-                where col_id = ? and pos between ? and ?;
-              `,
+                  update todo
+                  set pos = pos + 1
+                  where col_id = ? and pos between ? and ?;
+                  `,
               [columnId, position, originPos - 1]
             );
           }
@@ -112,10 +113,10 @@ function moveTodo(id, pos, columnId) {
         if (originColId !== columnId) {
           return conn.execute(
             `
-                update todo
-                set pos = pos - 1
-                where col_id = ? and pos > ?;
-            `,
+                  update todo
+                  set pos = pos - 1
+                  where col_id = ? and pos > ?;
+                  `,
             [originColId, originPos]
           );
         } else {
@@ -127,20 +128,27 @@ function moveTodo(id, pos, columnId) {
       .then(() => {
         return conn.execute(
           `
-            update todo
-            set pos = ?, col_id = ?
-            where id = ?;
+          update todo
+          set pos = ?, col_id = ?
+          where id = ?;
           `,
           [position, columnId, id]
         );
       })
       .then(() =>
+        conn.execute(`select title from col where id = ?`, [originColId])
+      )
+      .then(([rows, fields]) => {
+        originColTitle = rows[0].title;
+        return conn.execute(`select title from col where id = ?`, [columnId]);
+      })
+      .then(([rows, fields]) =>
         postHistory({
           conn,
           action: 'move',
           todoId: id,
-          fromColId: originColId,
-          toColId: columnId,
+          fromColTitle: originColTitle,
+          toColTitle: rows[0].title,
         })
       )
       .then(() => conn.commit())
@@ -259,16 +267,16 @@ function postHistory({
   todoId,
   todoTitle,
   fromColTitle,
-  toColId,
+  toColTitle,
 }) {
   switch (action) {
     case 'move':
       return conn.execute(
         `
           insert into hist (act, title, from_col, to_col)
-          values (?, (select title from todo where id = ?), (select title from col where id = ?), (select title from col where id = ?))
+          values (?, (select title from todo where id = ?), ?, ?)
         `,
-        [action, todoId, fromColId, toColId]
+        [action, todoId, fromColTitle, toColTitle]
       );
     case 'remove':
       return conn.execute(
@@ -282,9 +290,9 @@ function postHistory({
       return conn.execute(
         `
           insert into hist (act, title, from_col)
-          values (?, ?, (select title from col where id = ?))
+          values (?, ?, ?)
         `,
-        [action, todoTitle, fromColId]
+        [action, todoTitle, fromColTitle]
       );
     case 'update':
       return conn.execute(

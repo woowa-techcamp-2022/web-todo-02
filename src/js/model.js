@@ -34,6 +34,16 @@ class Model {
       body: JSON.stringify({ cardId, content, title }),
     }).then((res) => res.json());
   }
+
+  moveCard(cardId, position, columnId) {
+    return fetch('/todo/move', {
+      headers: {
+        'content-type': 'application/json',
+      },
+      method: 'put',
+      body: JSON.stringify({ cardId, position, columnId }),
+    }).then((res) => res.json());
+  }
 }
 
 const model = new Model();

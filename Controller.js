@@ -36,7 +36,11 @@ function getAllColumnsAndTodos(req, res) {
         }
       });
 
-      res.status(200).send(Array.from(result.values()));
+      const allColumnsAndTodos = Array.from(result.values());
+      allColumnsAndTodos.forEach((column) =>
+        column.todos.sort((a, b) => b.order - a.order)
+      );
+      res.status(200).send(allColumnsAndTodos);
     })
     .catch(() => {
       res.status(500).send();
@@ -79,7 +83,7 @@ function putTodo(req, res) {
 }
 
 function moveTodo(req, res) {
-  const { id, position, columnId } = req.body;
+  const { cardId: id, position, columnId } = req.body;
 
   dao
     .moveTodo(id, position, columnId)

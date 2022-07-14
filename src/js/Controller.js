@@ -1,4 +1,4 @@
-import view from './view.js';
+import view from './View.js';
 import model from './model.js';
 
 class Controller {
@@ -39,6 +39,14 @@ class Controller {
   updateCard(cardId, title, content) {
     return new Promise((resolve, reject) => {
       model.updateCard(cardId, title, content).then(() => {
+        resolve();
+      });
+    });
+  }
+
+  moveCard(cardId, position, columnId) {
+    return new Promise((resolve, reject) => {
+      model.moveCard(cardId, position, columnId).then(() => {
         resolve();
       });
     });
