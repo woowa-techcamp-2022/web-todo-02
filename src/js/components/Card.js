@@ -81,8 +81,17 @@ export default class {
     const $originalCard = event.target;
     const $skeleton = this.getSkeleton();
     view.addClass($skeleton, 'changed');
-    event.target.replaceWith($skeleton.cloneNode(true));
-    $skeleton.replaceWith($originalCard);
+
+    const $cards = [...this.getCardsWithoutMoving($skeleton)];
+    const skeletonIndex = $cards.indexOf($skeleton);
+    const cardIndex = $cards.indexOf($originalCard);
+
+    const isSkeletonAboveCard = skeletonIndex < cardIndex;
+    if (isSkeletonAboveCard) {
+      view.insertAfter($skeleton, $originalCard);
+    } else {
+      $originalCard.parentNode.insertBefore($skeleton, $originalCard);
+    }
   }
 
   moveSkeletonToAdjacentCard(event) {
@@ -212,10 +221,14 @@ export default class {
     return document.querySelector('.skeleton');
   }
 
+  getCardsWithoutMoving($skeleton) {
+    const $cardList = $skeleton.closest('.column-cards');
+    return $cardList.querySelectorAll('.card:not(.moving)');
+  }
+
   getDestinationPosition() {
     const $skeleton = this.getSkeleton();
-    const $cardList = $skeleton.closest('.column-cards');
-    const $cards = $cardList.querySelectorAll('.card:not(.moving)');
+    const $cards = this.getCardsWithoutMoving($skeleton);
     const skeletonIndex = [...$cards].indexOf($skeleton);
 
     return $cards.length - skeletonIndex;
