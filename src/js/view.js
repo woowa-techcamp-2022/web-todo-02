@@ -92,14 +92,6 @@ class View {
 
   cancelUpdateCard($column, $cardForm) {}
 
-  activateBtn($button) {
-    $button.removeAttribute('disabled');
-  }
-
-  deactivateBtn($button) {
-    $button.setAttribute('disabled', true);
-  }
-
   replaceCardWithCardForm($card, title, content) {
     $card.replaceWith(
       new CardForm('update', $card.dataset.id, title, content).getElement()

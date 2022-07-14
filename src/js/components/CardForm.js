@@ -65,12 +65,12 @@ export default class {
 
   activateSubmit() {
     const $submitBtn = this.$element.querySelector('.card-form-submitbtn');
-    view.activateBtn($submitBtn);
+    $submitBtn.removeAttribute('disabled');
   }
 
   deactivateSubmit() {
     const $submitBtn = this.$element.querySelector('.card-form-submitbtn');
-    view.deactivateBtn($submitBtn);
+    $submitBtn.setAttribute('disabled', true);
   }
 
   getTitle() {
