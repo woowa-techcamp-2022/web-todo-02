@@ -25,13 +25,15 @@ function getAllColumnsAndTodos(req, res) {
           });
         }
 
-        result.get(id).todos.push({
-          id: todoId,
-          title: todoTitle,
-          content: todoContent,
-          order: todoOrder,
-          updated: orderUpdated,
-        });
+        if (todoId) {
+          result.get(id).todos.push({
+            id: todoId,
+            title: todoTitle,
+            content: todoContent,
+            order: todoOrder,
+            updated: orderUpdated,
+          });
+        }
       });
 
       res.status(200).send(Array.from(result.values()));
