@@ -1,0 +1,237 @@
+html {
+  background-color: rgb(225, 225, 225);
+}
+
+html,
+body {
+  height: 100%;
+  overflow-x: hidden;
+}
+
+#header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--padding-outer);
+}
+
+#main {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+  /* 86.5px: 헤더 높이 */
+  height: calc(100% - 86.5px);
+  padding: var(--padding-outer);
+}
+
+.column {
+  min-width: 308px;
+}
+
+.column-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.column-header>div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.column-header-counter {
+  background-color: rgb(190, 190, 190);
+  text-align: center;
+  font-size: 20px;
+  width: 25px;
+  padding: 4px;
+  border-radius: 40%;
+  margin-left: 8px;
+}
+
+.column-cards {
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 10px 0;
+  padding: 1px 4px;
+  /* 32px: 컬럼 헤더 높이 */
+  height: calc(100% - 32px);
+}
+
+.card {
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+  padding: 12px 20px;
+  background-color: white;
+  border-radius: 10px;
+}
+
+.card.skeleton {
+  opacity: 0.4;
+  box-shadow: 0px 0px 0px 1px #0075de;
+}
+
+.card.skeleton .card-header-delete {
+  display: none;
+}
+
+.card.moving {
+  user-select: none;
+  z-index: 99;
+  position: absolute;
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0px 2px 4px 0px #00000040;
+}
+
+.card-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 4px 0;
+}
+
+.card-form input {
+  border: 0;
+}
+
+.card-form input[name='title'] {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.card-form input[name='content'] {
+  font-size: 16px;
+}
+
+.card-form-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.card-form-cancelbtn {
+  color: gray;
+  background: rgb(224, 224, 224);
+}
+
+.card-form-cancelbtn:hover {
+  color: black;
+  background: rgb(200, 200, 200);
+}
+
+.card-form-submitbtn {
+  color: white;
+  background: rgb(48, 118, 215);
+}
+
+.card-form-submitbtn:disabled {
+  background: rgb(147, 197, 249);
+}
+
+.card-form-buttons button {
+  width: 100%;
+  padding: 12px 0;
+  border-radius: 8px;
+}
+
+.card.danger {
+  background-color: rgba(255, 0, 0, 0.1);
+  box-shadow: 0px 0px 0px 1px red;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-content {
+  margin: 5px 0;
+}
+
+.card-author {
+  color: rgb(180, 180, 180);
+  font-size: 12px;
+}
+
+.column-header-add svg path,
+.column-header-delete svg path,
+.card-header-delete svg path {
+  fill: rgb(150, 150, 150);
+}
+
+.column-header-add:hover svg path {
+  fill: blue;
+}
+
+.column-header-delete:hover svg path,
+.card-header-delete:hover svg path {
+  fill: red;
+}
+
+#aside {
+  position: absolute;
+  top: 0px;
+  right: -500px;
+  width: 500px;
+  height: 100%;
+  transition: transform 1s;
+}
+
+#aside-history {
+  height: 100%;
+}
+
+#aside-history {
+  position: relative;
+  width: 500px;
+  padding: 30px;
+  flex-shrink: 0;
+  background-color: white;
+}
+
+#aside-history-closebtn {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+#aside-history-column {
+  width: 100%;
+  height: 100%;
+  background-color: rgb(221, 255, 232);
+  overflow-y: auto;
+}
+
+.history-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100px;
+}
+
+.history-card-title {
+  font-size: 20px;
+  text-align: center;
+  width: 300px;
+  white-space: pre-wrap;
+  word-break: keep-all;
+}
+
+.history-card-time {
+  color: grey;
+}
+
+#aside-background {
+  background-color: white;
+  opacity: 0.75;
+}
+
+.show {
+  transform: translateX(-500px);
+}
