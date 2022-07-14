@@ -61,7 +61,7 @@ class View {
   }
 
   updateCard($column, $cardForm, title, content) {
-    controller.updateCard($column.dataset.id, title, content).then(() => {
+    controller.updateCard($cardForm.dataset.id, title, content).then(() => {
       this.replaceCardFormWithCard(
         $cardForm.dataset.id,
         $column,

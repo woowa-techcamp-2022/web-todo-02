@@ -63,16 +63,14 @@ function postTodo(req, res) {
 }
 
 function putTodo(req, res) {
-  const { id, title, content, columnId } = req.body;
-
+  const { cardId: id, title, content } = req.body;
   dao
-    .putTodo(id, title, content, columnId)
+    .putTodo(id, title, content)
     .then(() => {
       res.status(200).send({
         id,
         title,
         content,
-        columnId,
       });
     })
     .catch(() => {

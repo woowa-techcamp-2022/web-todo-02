@@ -38,9 +38,9 @@ class Controller {
 
   updateCard(cardId, title, content) {
     return new Promise((resolve, reject) => {
-      // model.updateCard(cardId, title, content).then(() => {
-      resolve();
-      // });
+      model.updateCard(cardId, title, content).then(() => {
+        resolve();
+      });
     });
   }
 }

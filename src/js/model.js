@@ -24,6 +24,16 @@ class Model {
       body: JSON.stringify({ cardId }),
     });
   }
+
+  updateCard(cardId, title, content) {
+    return fetch('/todo', {
+      headers: {
+        'content-type': 'application/json',
+      },
+      method: 'put',
+      body: JSON.stringify({ cardId, content, title }),
+    }).then((res) => res.json());
+  }
 }
 
 const model = new Model();

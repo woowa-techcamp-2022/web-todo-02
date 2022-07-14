@@ -151,13 +151,22 @@ function moveTodo(id, pos, columnId) {
   });
 }
 
-function putTodo(id, title, content, columnId) {
+function putTodo(id, title, content) {
   let conn;
 
   return new Promise((resolve, reject) => {
     getConnection()
       .then((connection) => (conn = connection))
       .then(() => conn.beginTransaction())
+      .then(() => getColumnTitle(conn, id))
+      .then(([rows, fields]) =>
+        postHistory({
+          conn,
+          action: 'update',
+          todoTitle: title,
+          fromColTitle: rows[0].title,
+        })
+      )
       .then(() =>
         conn.execute(
           `
@@ -167,14 +176,6 @@ function putTodo(id, title, content, columnId) {
           `,
           [title, content, id]
         )
-      )
-      .then(() =>
-        postHistory({
-          conn,
-          action: 'update',
-          todoTitle: title,
-          fromColId: columnId,
-        })
       )
       .then(() => conn.commit())
       .then(() => resolve())
@@ -289,9 +290,9 @@ function postHistory({
       return conn.execute(
         `
           insert into hist (act, title, from_col)
-          values (?, ?, (select title from col where id = ?))
+          values (?, ?, ?)
         `,
-        [action, todoTitle, fromColId]
+        [action, todoTitle, fromColTitle]
       );
   }
 }
