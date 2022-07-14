@@ -1,4 +1,4 @@
-import view from '../view.js';
+import view from '../View.js';
 
 export default class {
   constructor(id, title) {
@@ -12,7 +12,7 @@ export default class {
   }
 
   init() {
-    this.$element.classList.add('column');
+    this.$element.className = 'column';
     this.$element.setAttribute('data-id', this.state.id);
     this.render();
     this.attachEvents();
@@ -36,10 +36,9 @@ export default class {
   }
 
   removeCardForm() {
-    const $column = this.$element.closest('.column');
-    const $cardList = $column.querySelector('.column-cards');
-
-    view.removeCardForm($column, $cardList);
+    const $cardList = this.$element.querySelector('.column-cards');
+    view.removeClass(this.$element, 'adding');
+    view.removeElement($cardList.firstChild);
   }
 
   getElement() {

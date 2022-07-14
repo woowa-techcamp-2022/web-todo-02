@@ -1,4 +1,5 @@
-import view from '../view.js';
+import view from '../View.js';
+import controller from '../Controller.js';
 
 export default class {
   constructor(id, title, content) {
@@ -13,7 +14,7 @@ export default class {
   }
 
   init() {
-    this.$element.classList.add('card');
+    this.$element.className = 'card';
     this.$element.setAttribute('data-id', this.state.id);
     this.render();
     this.attachEvents();
@@ -33,7 +34,9 @@ export default class {
   }
 
   deleteCard() {
-    view.removeElement(this.$element);
+    controller.deleteCard(this.$element.dataset.id).then(() => {
+      view.removeElement(this.$element);
+    });
   }
 
   replaceCardWithCardForm() {
@@ -45,13 +48,11 @@ export default class {
   }
 
   turnOnDanger() {
-    const $card = this.$element;
-    view.turnOnCardDanger($card);
+    view.addClass(this.$element, 'danger');
   }
 
   turnOffDanger() {
-    const $card = this.$element;
-    view.turnOffCardDanger($card);
+    view.removeClass(this.$element, 'danger');
   }
 
   setCardInitialPosition() {
@@ -62,7 +63,7 @@ export default class {
 
   addSkeleton() {
     const $skeleton = this.$element.cloneNode(true);
-    $skeleton.classList.add('skeleton');
+    view.addClass($skeleton, 'skeleton');
     this.$element.parentNode.insertBefore($skeleton, this.$element);
   }
 
@@ -77,7 +78,7 @@ export default class {
   replaceCardWithSkeleton(event) {
     const $originalCard = event.target;
     const $skeleton = document.querySelector('.skeleton');
-    $skeleton.classList.add('changed');
+    view.addClass($skeleton, 'changed');
     event.target.replaceWith($skeleton.cloneNode(true));
     $skeleton.replaceWith($originalCard);
   }
@@ -87,7 +88,7 @@ export default class {
     const cardRect = $card.getBoundingClientRect();
     const yCenter = cardRect.top + cardRect.height / 2;
     const $skeleton = document.querySelector('.skeleton');
-    $skeleton.classList.add('changed');
+    view.addClass($skeleton, 'changed');
     if (event.clientY > yCenter) {
       view.insertAfter($skeleton, $card);
     } else {
@@ -99,7 +100,7 @@ export default class {
     this.getAllCardLists().forEach(($cardLists) => {
       $cardLists.onmouseenter = (event) => {
         const $skeleton = document.querySelector('.skeleton');
-        $skeleton.classList.add('changed');
+        view.addClass($skeleton, 'changed');
         const newColumnId = event.target.closest('.column').dataset.id;
         this.setColumnId(newColumnId);
         view.insertAfter($skeleton, $cardLists.lastChild);
@@ -142,7 +143,7 @@ export default class {
 
     this.setCardInitialPosition();
     this.addSkeleton();
-    this.$element.classList.add('moving');
+    view.addClass($element, ' moving');
     this.setColumnId(this.$element.closest('.column').dataset.id);
     // 1. pointer-events를 none으로 설정한 이유: 카드 드래그 시 다른 카드의 mouseenter 이벤트를 감지하기 위해
     // 2. setTimeout으로 delay를 넣어준 이유: dblclick 이벤트를 감지하기 위해
@@ -181,7 +182,7 @@ export default class {
     } else {
       $skeleton.remove();
     }
-    this.$element.classList.remove('moving');
+    view.removeClass(this.$element, 'moving');
     this.removeMouseEnterEventToAllCardLists();
     this.removeMouseEnterEventToAllCards();
   }

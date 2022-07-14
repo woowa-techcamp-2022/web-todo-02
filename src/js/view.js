@@ -6,12 +6,20 @@ import controller from './Controller.js';
 class View {
   constructor() {}
 
+  removeElement($element) {
+    $element.remove();
+  }
+
   insertAfter($newNode, $existingNode) {
     $existingNode.parentNode.insertBefore($newNode, $existingNode.nextSibling);
   }
 
-  removeElement($element) {
-    $element.remove();
+  addClass($element, className) {
+    $element.classList.add(className);
+  }
+
+  removeClass($element, className) {
+    $element.classList.remove(className);
   }
 
   appendColumn(id, title) {
@@ -32,27 +40,16 @@ class View {
     });
   }
 
-  deleteCard($card) {
-    controller.deleteCard($card.dataset.id).then(() => {
-      this.removeElement($card);
-    });
-  }
-
   addCardForm($column, $cardList) {
-    $column.classList.add('adding');
+    this.addClass($column, 'adding');
     $cardList.insertBefore(
       new CardForm('add').getElement(),
       $cardList.firstChild
     );
   }
 
-  removeCardForm($column, $cardList) {
-    $column.classList.remove('adding');
-    this.removeElement($cardList.firstChild);
-  }
-
   replaceCardFormWithCard(cardId, $column, $cardForm, title, content) {
-    $column.classList.remove('adding');
+    this.removeClass($column, 'adding');
     const $card = new Card(cardId, title, content);
     $cardForm.replaceWith($card.getElement());
   }
@@ -84,7 +81,7 @@ class View {
 
   cancelCardFormSubmit($column, $cardForm) {
     if ($column.classList.contains('adding')) {
-      $column.classList.remove('adding');
+      this.removeClass($column, 'adding');
       this.removeElement($cardForm);
     } else {
       this.cancelUpdateCard($column, $cardForm);
@@ -105,14 +102,6 @@ class View {
     $card.replaceWith(
       new CardForm('update', $card.dataset.id, title, content).getElement()
     );
-  }
-
-  turnOnCardDanger($card) {
-    $card.classList.add('danger');
-  }
-
-  turnOffCardDanger($card) {
-    $card.classList.remove('danger');
   }
 }
 

@@ -1,4 +1,4 @@
-import view from '../view.js';
+import view from '../View.js';
 
 export default class {
   constructor(action, id = '', title = '', content = '') {
@@ -14,7 +14,7 @@ export default class {
   }
 
   init() {
-    this.$element.classList.add('card');
+    this.$element.className = 'card';
     this.$element.dataset.id = this.state.id;
     this.$element.dataset.action = this.state.action;
     this.render();
