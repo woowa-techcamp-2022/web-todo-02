@@ -1,18 +1,18 @@
 class Model {
   constructor() {}
 
-  getAllColumns(callback) {
-    fetch('/column')
-      .then((res) => {
-        console.log(res);
-        return res.json();
-      })
-      .then((data) => {
-        callback(data);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+  getAllColumns() {
+    return fetch('/column').then((res) => res.json());
+  }
+
+  addCard(columnId, title, content) {
+    return fetch('/todo', {
+      headers: {
+        'content-type': 'application/json',
+      },
+      method: 'post',
+      body: JSON.stringify({ columnId, title, content }),
+    }).then((res) => res.json());
   }
 }
 

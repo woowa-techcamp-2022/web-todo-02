@@ -30,7 +30,7 @@ function postTodo(id, title, content, columnId) {
     getConnection()
       .then((connection) => (conn = connection))
       .then(() => conn.beginTransaction())
-      .then((conn) =>
+      .then(() =>
         conn.execute(
           `
           insert into todo (id, title, content, col_id, pos)
@@ -264,7 +264,7 @@ function postHistory({ conn, action, todoId, todoTitle, fromColId, toColId }) {
           insert into hist (act, title, from_col)
           values (?, ?, (select title from col where id = ?))
         `,
-        [action, title, fromColId]
+        [action, todoTitle, fromColId]
       );
     case 'update':
       return conn.execute(

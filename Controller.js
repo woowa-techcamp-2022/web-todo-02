@@ -44,7 +44,7 @@ function getAllColumnsAndTodos(req, res) {
 }
 
 function postTodo(req, res) {
-  const { id: columnId, title, content } = req.body;
+  const { columnId, title, content } = req.body;
   const todoId = getUniqueId();
 
   dao
