@@ -5,6 +5,7 @@ html {
 html,
 body {
   height: 100%;
+  overflow-x: hidden;
 }
 
 #header {
@@ -173,22 +174,14 @@ body {
 #aside {
   position: absolute;
   top: 0px;
-  left: 0px;
-  width: 100%;
+  right: -500px;
+  width: 500px;
   height: 100%;
-  z-index: 99;
-  display: flex;
-  flex-flow: nowrap;
+  transition: transform 1s;
 }
 
-#aside-history,
-#aside-background,
 #aside-history {
   height: 100%;
-}
-
-#aside-background {
-  width: 100%;
 }
 
 #aside-history {
@@ -231,4 +224,8 @@ body {
 #aside-background {
   background-color: white;
   opacity: 0.75;
+}
+
+.show {
+  transform: translateX(-500px);
 }
