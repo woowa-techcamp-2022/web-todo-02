@@ -1,12 +1,12 @@
-import dao from '../dao/Dao.js';
-import getUniqueId from '../util/uuid.js';
+import dao from './Dao.js';
+import getUniqueId from './util/uuid.js';
 
 function getAllColumnsAndTodos(req, res) {
   dao
     .getAllColumnsAndTodos()
-    .then((datas) => {
+    .then((dataArray) => {
       const result = new Map();
-      datas.forEach((data) => {
+      dataArray.forEach((data) => {
         const {
           title,
           id,
