@@ -54,28 +54,30 @@ class View {
     $cardForm.replaceWith($card.getElement());
   }
 
+  addCard($column, $cardForm, title, content) {
+    controller.addCard($column.dataset.id, title, content).then((cardId) => {
+      this.replaceCardFormWithCard(cardId, $column, $cardForm, title, content);
+    });
+  }
+
+  updateCard($column, $cardForm, title, content) {
+    controller.updateCard($column.dataset.id, title, content).then(() => {
+      this.replaceCardFormWithCard(
+        $cardForm.dataset.id,
+        $column,
+        $cardForm,
+        title,
+        content
+      );
+    });
+  }
+
   confirmCardFormSubmit($column, $cardForm, title, content) {
     const { action } = $cardForm.dataset;
     if (action === 'add') {
-      controller.addCard($column.dataset.id, title, content).then((cardId) => {
-        this.replaceCardFormWithCard(
-          cardId,
-          $column,
-          $cardForm,
-          title,
-          content
-        );
-      });
+      this.addCard($column, $cardForm, title, content);
     } else if (action === 'update') {
-      controller.updateCard($column.dataset.id, title, content).then(() => {
-        this.replaceCardFormWithCard(
-          $cardForm.dataset.id,
-          $column,
-          $cardForm,
-          title,
-          content
-        );
-      });
+      this.updateCard($column, $cardForm, title, content);
     }
   }
 
