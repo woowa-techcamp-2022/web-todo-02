@@ -56,6 +56,8 @@ body {
   flex-direction: column;
   gap: 10px;
   padding: 10px 0;
+  /* 32px: 컬럼 헤더 높이 */
+  height: calc(100% - 32px);
 }
 
 .card {

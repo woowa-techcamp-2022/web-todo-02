@@ -57,6 +57,10 @@ export default class {
     this.$element.parentNode.insertBefore($skeleton, this.$element);
   }
 
+  getAllCardLists() {
+    return document.querySelectorAll('.column-cards');
+  }
+
   getAllCardsWithoutMovingCard() {
     return document.querySelectorAll('.card:not(.moving):not(.skeleton)');
   }
@@ -82,6 +86,18 @@ export default class {
     }
   }
 
+  setMouseEnterEventToAllCardLists() {
+    this.getAllCardLists().forEach(($cardLists) => {
+      $cardLists.onmouseenter = (event) => {
+        const $skeleton = document.querySelector('.skeleton');
+        $skeleton.classList.add('changed');
+        const newColumnId = event.target.closest('.column').dataset.id;
+        this.setColumnId(newColumnId);
+        insertAfter($skeleton, $cardLists.lastChild);
+      };
+    });
+  }
+
   setMouseEnterEventToAllCards() {
     this.getAllCardsWithoutMovingCard().forEach(($card) => {
       $card.onmouseenter = (event) => {
@@ -93,6 +109,12 @@ export default class {
         }
         this.setColumnId(newColumnId);
       };
+    });
+  }
+
+  removeMouseEnterEventToAllCardLists() {
+    this.getAllCardLists().forEach((cardList) => {
+      cardList.onmouseenter = null;
     });
   }
 
@@ -120,6 +142,7 @@ export default class {
     }, 100);
 
     const dragStartPosition = { x: event.clientX, y: event.clientY };
+    this.setMouseEnterEventToAllCardLists();
     this.setMouseEnterEventToAllCards();
     const dragEvent = (event) => {
       this.drag(event, dragStartPosition);
@@ -150,6 +173,7 @@ export default class {
       $skeleton.remove();
     }
     this.$element.classList.remove('moving');
+    this.removeMouseEnterEventToAllCardLists();
     this.removeMouseEnterEventToAllCards();
   }
 
