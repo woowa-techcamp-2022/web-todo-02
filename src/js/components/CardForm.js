@@ -39,7 +39,6 @@ export default class {
   cancelSubmit(e) {
     e.preventDefault();
     const $column = this.$element.closest('.column');
-
     view.cancelCardFormSubmit($column, this.$element);
   }
 
