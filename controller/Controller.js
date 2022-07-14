@@ -65,15 +65,33 @@ function postTodo(req, res) {
 }
 
 function putTodo(req, res) {
-  const { id, title, content, position, columnId } = req.body;
+  const { id, title, content } = req.body;
 
   dao
-    .putTodo(id, title, content, position, columnId)
+    .putTodo(id, title, content)
     .then(() => {
       res.status(200).send({
         id,
         title,
         content,
+        columnId,
+      });
+    })
+    .catch((e) => {
+      console.log(e);
+      res.status(500).send(e);
+    });
+}
+
+function moveTodo(req, res) {
+  const { id, position, columnId } = req.body;
+
+  dao
+    .moveTodo(id, position, columnId)
+    .then(() => {
+      res.status(200).send({
+        id,
+        position,
         columnId,
       });
     })
@@ -113,6 +131,7 @@ export default {
   getAllColumnsAndTodos,
   postTodo,
   putTodo,
+  moveTodo,
   deleteTodo,
   getAllHistory,
 };

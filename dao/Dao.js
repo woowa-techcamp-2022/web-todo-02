@@ -48,7 +48,7 @@ function postTodo(id, title, content, columnId) {
   });
 }
 
-function putTodo(id, title, content, pos, columnId) {
+function moveTodo(id, pos, columnId) {
   const position = Number(pos);
   let conn;
   let originPos;
@@ -66,38 +66,24 @@ function putTodo(id, title, content, pos, columnId) {
         originColId = rows[0].col_id;
 
         if (originColId !== columnId) {
-          return new Promise((resolve, reject) => {
-            conn
-              .execute(
-                `
-                    update todo
-                    set pos = pos + 1
-                    where col_id = ? and pos >= ?;
-                `,
-                [columnId, position]
-              )
-              .then(() => {
-                resolve(
-                  conn.execute(
-                    `
-                        update todo
-                        set pos = pos - 1
-                        where col_id = ? and pos > ?;
-                    `,
-                    [originColId, originPos]
-                  )
-                );
-              })
-              .catch((e) => reject(e));
-          });
+          // 이동하는 컬럼 카드 조정
+          return conn.execute(
+            `
+              update todo
+              set pos = pos + 1
+              where col_id = ? and pos >= ?;
+            `,
+            [columnId, position]
+          );
         } else if (position !== originPos) {
+          // 동일 컬럼 카드 조정.
           if (position > originPos) {
             return conn.execute(
               `
                 update todo
                 set pos = pos - 1
                 where col_id = ? and pos between ? and ?;
-            `,
+              `,
               [columnId, originPos + 1, position]
             );
           } else {
@@ -106,27 +92,70 @@ function putTodo(id, title, content, pos, columnId) {
                 update todo
                 set pos = pos + 1
                 where col_id = ? and pos between ? and ?;
-            `,
+              `,
               [columnId, position, originPos - 1]
             );
           }
         }
       })
+      .then(() => {
+        //원래 컬럼 카드 조정
+        if (originColId !== columnId) {
+          return conn.execute(
+            `
+                update todo
+                set pos = pos - 1
+                where col_id = ? and pos > ?;
+            `,
+            [originColId, originPos]
+          );
+        } else {
+          return new Promise((resolve, reject) => {
+            resolve();
+          });
+        }
+      })
+      .then(() => {
+        return conn.execute(
+          `
+            update todo
+            set pos = ?, col_id = ?
+            where id = ?;
+          `,
+          [position, columnId, id]
+        );
+      })
+      //.then(() => postHistory())
+      .then(() => conn.commit())
+      .then(() => resolve())
+      .catch(() => conn.rollback())
+      .then(() => reject())
+      .finally(() => conn.end());
+  });
+}
+
+function putTodo(id, title, content) {
+  let conn;
+
+  return new Promise((resolve, reject) => {
+    getConnection()
+      .then((connection) => (conn = connection))
+      .then(() => conn.beginTransaction())
       .then(() =>
         conn.execute(
           `
             update todo
-            set title = ?, content = ?, pos = ?, col_id = ?
+            set title = ?, content = ?
             where id = ?
-        `,
-          [title, content, position, columnId, id]
+          `,
+          [title, content, id]
         )
       )
-      .then(([rows, field]) => {
-        if (rows.affectedRows === 1) conn.commit().then(resolve());
-        else conn.rollback().then(reject());
-      })
-      .catch((e) => conn.rollback().then(reject(e)))
+      //.then(() => postHistory())
+      .then(() => conn.commit())
+      .then(() => resolve())
+      .catch(() => conn.rollback())
+      .then(() => reject())
       .finally(() => conn.end());
   });
 }
@@ -179,20 +208,26 @@ function getAllHistory() {
   });
 }
 
-function postHistory(action, todoId, fromColId, toColId) {
-  let conn;
-
+function postHistory(conn, action, newtitle, todoId, fromColId, toColId) {
   return new Promise((resolve, reject) => {
-    getConnection()
-      .then((connection) => (conn = connection))
-      .then((conn) =>
-        conn.execute(
-          `
-            insert into hist (act, todo_title, from_col, to_col)
-            values (?, (select title from todo where id = ?), (select title from col where id = ?), (select title from col where id = ?));
-          `,
-          [action, todoId, fromColId, toColId]
-        )
+    switch (action) {
+      case 'move':
+        conn.excute();
+        break;
+      case 'remove':
+        break;
+      case 'add':
+        break;
+      case 'update':
+        break;
+    }
+    conn
+      .execute(
+        `
+        insert into hist (act, todo_title, from_col, to_col)
+        values (?, (select title from todo where id = ?), (select title from col where id = ?), (select title from col where id = ?));
+        `,
+        [action, todoId, fromColId, toColId]
       )
       .then(([rows, field]) => {
         if (rows.affectedRows === 1) resolve();
@@ -207,6 +242,7 @@ export default {
   getAllColumnsAndTodos,
   postTodo,
   putTodo,
+  moveTodo,
   deleteTodo,
   getAllHistory,
   postHistory,
