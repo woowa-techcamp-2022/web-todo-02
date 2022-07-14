@@ -217,6 +217,10 @@ body {
 
 .history-card-title {
   font-size: 20px;
+  text-align: center;
+  width: 300px;
+  white-space: pre-wrap;
+  word-break: keep-all;
 }
 
 .history-card-time {
