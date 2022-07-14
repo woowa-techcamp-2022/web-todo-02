@@ -9,11 +9,11 @@ function getAllColumnsAndTodos() {
       .then((conn) =>
         conn.execute(`
         select c.title as title, c.id as id, t.id as todo_id,
-            t.title as todo_title, t.content as todo_content, t.pos as todo_order, t.pos_updated_time as todo_pos_updated
+            t.title as todo_title, t.content as todo_content, t.pos as todo_order
         from col c
         left join todo t
         on c.id = t.col_id
-        order by t.pos desc, t.pos_updated_time desc;`)
+        order by t.pos desc;`)
       )
       .then(([rows, field]) => {
         resolve(rows);
