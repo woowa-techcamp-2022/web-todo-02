@@ -48,29 +48,85 @@ function postTodo(id, title, content, columnId) {
   });
 }
 
-function putTodo(id, title, content, position, columnId) {
+function putTodo(id, title, content, pos, columnId) {
+  const position = Number(pos);
   let conn;
+  let originPos;
+  let originColId;
 
   return new Promise((resolve, reject) => {
     getConnection()
       .then((connection) => (conn = connection))
-      .then((conn) =>
+      .then(() => conn.beginTransaction())
+      .then(() =>
+        conn.execute(`select pos, col_id from todo where id = ?`, [id])
+      )
+      .then(([rows, fields]) => {
+        originPos = rows[0].pos;
+        originColId = rows[0].col_id;
+
+        if (originColId !== columnId) {
+          return new Promise((resolve, reject) => {
+            conn
+              .execute(
+                `
+                    update todo
+                    set pos = pos + 1
+                    where col_id = ? and pos >= ?;
+                `,
+                [columnId, position]
+              )
+              .then(() => {
+                resolve(
+                  conn.execute(
+                    `
+                        update todo
+                        set pos = pos - 1
+                        where col_id = ? and pos > ?;
+                    `,
+                    [originColId, originPos]
+                  )
+                );
+              })
+              .catch((e) => reject(e));
+          });
+        } else if (position !== originPos) {
+          if (position > originPos) {
+            return conn.execute(
+              `
+                update todo
+                set pos = pos - 1
+                where col_id = ? and pos between ? and ?;
+            `,
+              [columnId, originPos + 1, position]
+            );
+          } else {
+            return conn.execute(
+              `
+                update todo
+                set pos = pos + 1
+                where col_id = ? and pos between ? and ?;
+            `,
+              [columnId, position, originPos - 1]
+            );
+          }
+        }
+      })
+      .then(() =>
         conn.execute(
           `
-          update todo
-          set title = ?, content = ?,
-              pos_updated_time = case when (col_id = ? and pos = ?) then pos_updated_time else current_timestamp end,
-              pos = ?, col_id = ?
-          where id = ?;
-          `,
-          [title, content, columnId, position, position, columnId, id]
+            update todo
+            set title = ?, content = ?, pos = ?, col_id = ?
+            where id = ?
+        `,
+          [title, content, position, columnId, id]
         )
       )
       .then(([rows, field]) => {
-        if (rows.changedRows === 1) resolve();
-        else reject(new Error('number of changed rows not One'));
+        if (rows.affectedRows === 1) conn.commit().then(resolve());
+        else conn.rollback().then(reject());
       })
-      .catch((e) => reject(e))
+      .catch((e) => conn.rollback().then(reject(e)))
       .finally(() => conn.end());
   });
 }
