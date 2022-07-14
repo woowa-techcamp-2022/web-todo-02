@@ -139,7 +139,7 @@ export default class {
     // 2. setTimeout으로 delay를 넣어준 이유: dblclick 이벤트를 감지하기 위해
     const styleTimeoutID = setTimeout(() => {
       this.$element.style.pointerEvents = 'none';
-    }, 100);
+    }, 150);
 
     const dragStartPosition = { x: event.clientX, y: event.clientY };
     this.setMouseEnterEventToAllCardLists();
