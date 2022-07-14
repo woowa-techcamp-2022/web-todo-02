@@ -20,10 +20,6 @@ class Controller {
     });
   }
 
-  addColumn(id, title) {
-    view.appendColumn(id, title);
-  }
-
   addCard(columnId, title, content) {
     return new Promise((resolve, reject) => {
       // model.addCard(columnId, title, content).then((cardId) => {

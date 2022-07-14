@@ -1,4 +1,3 @@
-import { insertAfter } from '../utils.js';
 import view from '../view.js';
 
 export default class {
