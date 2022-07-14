@@ -97,26 +97,11 @@ export default class {
     }
   }
 
-  moveSkeletonToAdjacentCard(event) {
-    const $card = event.target;
-    const cardRect = $card.getBoundingClientRect();
-    const yCenter = cardRect.top + cardRect.height / 2;
-    const $skeleton = this.getSkeleton();
-    view.addClass($skeleton, 'changed');
-    if (event.clientY > yCenter) {
-      view.insertAfter($skeleton, $card);
-    } else {
-      $card.parentNode.insertBefore($skeleton, $card);
-    }
-  }
-
   setMouseEnterEventToAllCardLists() {
     this.getAllCardLists().forEach(($cardLists) => {
       $cardLists.onmouseenter = (event) => {
         const $skeleton = this.getSkeleton();
         view.addClass($skeleton, 'changed');
-        const newColumnId = event.target.closest('.column').dataset.id;
-        this.setColumnId(newColumnId);
         view.insertAfter($skeleton, $cardLists.lastChild);
       };
     });
@@ -125,13 +110,7 @@ export default class {
   setMouseEnterEventToAllCards() {
     this.getAllCardsWithoutMovingCard().forEach(($staticCard) => {
       $staticCard.onmouseenter = (event) => {
-        const newColumnId = $staticCard.closest('.column').dataset.id;
-        if (this.$element.dataset.columnId === newColumnId) {
-          this.replaceCardWithSkeleton(event);
-        } else {
-          this.moveSkeletonToAdjacentCard(event);
-        }
-        this.setColumnId(newColumnId);
+        this.replaceCardWithSkeleton(event);
       };
     });
   }
@@ -148,17 +127,12 @@ export default class {
     });
   }
 
-  setColumnId(id) {
-    this.$element.dataset.columnId = id;
-  }
-
   dragStart(event) {
     if (event.target.closest('.card-header-delete')) return;
 
     this.setCardInitialPosition();
     this.addSkeleton();
     view.addClass(this.$element, 'moving');
-    this.setColumnId(this.$element.closest('.column').dataset.id);
     // 1. pointer-events를 none으로 설정한 이유: 카드 드래그 시 다른 카드의 mouseenter 이벤트를 감지하기 위해
     // 2. setTimeout으로 delay를 넣어준 이유: dblclick 이벤트를 감지하기 위해
     const styleTimeoutID = setTimeout(() => {
