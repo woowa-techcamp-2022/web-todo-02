@@ -29,6 +29,7 @@ function postTodo(id, title, content, columnId) {
   return new Promise((resolve, reject) => {
     getConnection()
       .then((connection) => (conn = connection))
+      .then(() => conn.beginTransaction())
       .then((conn) =>
         conn.execute(
           `
@@ -40,10 +41,18 @@ function postTodo(id, title, content, columnId) {
           [id, title, content, columnId, columnId]
         )
       )
-      .then(([rows, field]) => {
-        if (rows.affectedRows === 1) resolve();
-      })
-      .catch((e) => reject(e))
+      .then(() =>
+        postHistory({
+          conn,
+          action: 'add',
+          todoTitle: title,
+          fromColId: columnId,
+        })
+      )
+      .then(() => conn.commit())
+      .then(() => resolve())
+      .catch(() => conn.rollback())
+      .then(() => reject())
       .finally(() => conn.end());
   });
 }
@@ -125,7 +134,15 @@ function moveTodo(id, pos, columnId) {
           [position, columnId, id]
         );
       })
-      //.then(() => postHistory())
+      .then(() =>
+        postHistory({
+          conn,
+          action: 'move',
+          todoId: id,
+          fromColId: originColId,
+          toColId: columnId,
+        })
+      )
       .then(() => conn.commit())
       .then(() => resolve())
       .catch(() => conn.rollback())
@@ -134,7 +151,7 @@ function moveTodo(id, pos, columnId) {
   });
 }
 
-function putTodo(id, title, content) {
+function putTodo(id, title, content, columnId) {
   let conn;
 
   return new Promise((resolve, reject) => {
@@ -151,7 +168,14 @@ function putTodo(id, title, content) {
           [title, content, id]
         )
       )
-      //.then(() => postHistory())
+      .then(() =>
+        postHistory({
+          conn,
+          action: 'update',
+          todoTitle: title,
+          fromColId: columnId,
+        })
+      )
       .then(() => conn.commit())
       .then(() => resolve())
       .catch(() => conn.rollback())
@@ -160,27 +184,35 @@ function putTodo(id, title, content) {
   });
 }
 
-function deleteTodo(id) {
+function deleteTodo(id, columnId) {
   let conn;
 
   return new Promise((resolve, reject) => {
     getConnection()
       .then((connection) => (conn = connection))
-      .then((conn) =>
+      .then(() => conn.beginTransaction())
+      .then(() =>
         conn.execute(
           `
-          delete
-          from todo
-          where id = ?;
-        `,
+            delete
+            from todo
+            where id = ?;
+          `,
           [id]
         )
       )
-      .then(([rows, field]) => {
-        if (rows.affectedRows === 1) resolve();
-        else reject(new Error('number of affected rows not One'));
-      })
-      .catch((e) => reject(e))
+      .then(() =>
+        postHistory({
+          conn,
+          action: 'remove',
+          todoId: id,
+          fromColId: columnId,
+        })
+      )
+      .then(() => conn.commit())
+      .then(() => resolve())
+      .catch(() => conn.rollback())
+      .then(() => reject())
       .finally(() => conn.end());
   });
 }
@@ -208,34 +240,41 @@ function getAllHistory() {
   });
 }
 
-function postHistory(conn, action, newtitle, todoId, fromColId, toColId) {
-  return new Promise((resolve, reject) => {
-    switch (action) {
-      case 'move':
-        conn.excute();
-        break;
-      case 'remove':
-        break;
-      case 'add':
-        break;
-      case 'update':
-        break;
-    }
-    conn
-      .execute(
+function postHistory({ conn, action, todoId, todoTitle, fromColId, toColId }) {
+  switch (action) {
+    case 'move':
+      return conn.execute(
         `
-        insert into hist (act, todo_title, from_col, to_col)
-        values (?, (select title from todo where id = ?), (select title from col where id = ?), (select title from col where id = ?));
+          insert into hist (act, title, from_col, to_col)
+          values (?, (select title from todo where id = ?), (select title from col where id = ?), (select title from col where id = ?))
         `,
         [action, todoId, fromColId, toColId]
-      )
-      .then(([rows, field]) => {
-        if (rows.affectedRows === 1) resolve();
-        else reject(new Error('number of affected rows not One'));
-      })
-      .catch((e) => reject(e))
-      .finally(() => conn.end());
-  });
+      );
+    case 'remove':
+      return conn.execute(
+        `
+          insert into hist (act, title, from_col)
+          values (?, (select title from todo where id = ?), (select title from col where id = ?))
+        `,
+        [action, todoId, fromColId]
+      );
+    case 'add':
+      return conn.execute(
+        `
+          insert into hist (act, title, from_col)
+          values (?, ?, (select title from col where id = ?))
+        `,
+        [action, title, fromColId]
+      );
+    case 'update':
+      return conn.execute(
+        `
+          insert into hist (act, title, from_col)
+          values (?, ?, (select title from col where id = ?))
+        `,
+        [action, todoTitle, fromColId]
+      );
+  }
 }
 
 export default {

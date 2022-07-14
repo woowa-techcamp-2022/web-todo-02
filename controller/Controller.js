@@ -65,10 +65,10 @@ function postTodo(req, res) {
 }
 
 function putTodo(req, res) {
-  const { id, title, content } = req.body;
+  const { id, title, content, columnId } = req.body;
 
   dao
-    .putTodo(id, title, content)
+    .putTodo(id, title, content, columnId)
     .then(() => {
       res.status(200).send({
         id,
@@ -102,10 +102,10 @@ function moveTodo(req, res) {
 }
 
 function deleteTodo(req, res) {
-  const { id } = req.body;
+  const { id, columnId } = req.body;
 
   dao
-    .deleteTodo(id)
+    .deleteTodo(id, columnId)
     .then(() => {
       res.status(200).send();
     })
