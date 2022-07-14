@@ -102,6 +102,14 @@ class View {
       new CardForm('update', $card.dataset.id, title, content).getElement()
     );
   }
+
+  displaySidebar() {
+    document.querySelector('#aside').classList.add('show')
+  }
+
+  hideSidebar() {
+    document.querySelector('#aside').classList.remove('show')
+  }
 }
 
 const viewInstance = new View();
