@@ -32,10 +32,12 @@ function postTodo(id, title, content, columnId) {
       .then((conn) =>
         conn.execute(
           `
-        insert into todo (id, title, content, col_id)
-        values (?, ?, ?, ?);
+          insert into todo (id, title, content, col_id, pos)
+          values (?, ?, ?, ?,
+            ifnull ((select pos from (select max(pos) as pos from todo where col_id = ?) temp), 0)
+          + 1);
         `,
-          [id, title, content, columnId]
+          [id, title, content, columnId, columnId]
         )
       )
       .then(([rows, field]) => {
