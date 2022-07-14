@@ -98,10 +98,10 @@ function moveTodo(req, res) {
 }
 
 function deleteTodo(req, res) {
-  const { id, columnId } = req.body;
+  const { cardId: id } = req.body;
 
   dao
-    .deleteTodo(id, columnId)
+    .deleteTodo(id)
     .then(() => {
       res.status(200).send();
     })

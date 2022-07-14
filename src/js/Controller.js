@@ -30,9 +30,9 @@ class Controller {
 
   deleteCard(cardId) {
     return new Promise((resolve, reject) => {
-      // model.deleteCard(cardId).then(() => {
-      resolve();
-      // });
+      model.deleteCard(cardId).then(() => {
+        resolve();
+      });
     });
   }
 

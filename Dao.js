@@ -184,13 +184,22 @@ function putTodo(id, title, content, columnId) {
   });
 }
 
-function deleteTodo(id, columnId) {
+function deleteTodo(id) {
   let conn;
 
   return new Promise((resolve, reject) => {
     getConnection()
       .then((connection) => (conn = connection))
       .then(() => conn.beginTransaction())
+      .then(() => getColumnTitle(conn, id))
+      .then(([rows, fields]) =>
+        postHistory({
+          conn,
+          action: 'remove',
+          todoId: id,
+          fromColTitle: rows[0].title,
+        })
+      )
       .then(() =>
         conn.execute(
           `
@@ -201,20 +210,23 @@ function deleteTodo(id, columnId) {
           [id]
         )
       )
-      .then(() =>
-        postHistory({
-          conn,
-          action: 'remove',
-          todoId: id,
-          fromColId: columnId,
-        })
-      )
       .then(() => conn.commit())
       .then(() => resolve())
       .catch(() => conn.rollback())
       .then(() => reject())
       .finally(() => conn.end());
   });
+}
+
+function getColumnTitle(conn, cardId) {
+  return conn.execute(
+    `
+      select title
+      from col
+      where id = (select col_id from todo where id = ?)
+    `,
+    [cardId]
+  );
 }
 
 function getAllHistory() {
@@ -240,7 +252,14 @@ function getAllHistory() {
   });
 }
 
-function postHistory({ conn, action, todoId, todoTitle, fromColId, toColId }) {
+function postHistory({
+  conn,
+  action,
+  todoId,
+  todoTitle,
+  fromColTitle,
+  toColId,
+}) {
   switch (action) {
     case 'move':
       return conn.execute(
@@ -254,9 +273,9 @@ function postHistory({ conn, action, todoId, todoTitle, fromColId, toColId }) {
       return conn.execute(
         `
           insert into hist (act, title, from_col)
-          values (?, (select title from todo where id = ?), (select title from col where id = ?))
+          values (?, (select title from todo where id = ?), ?)
         `,
-        [action, todoId, fromColId]
+        [action, todoId, fromColTitle]
       );
     case 'add':
       return conn.execute(

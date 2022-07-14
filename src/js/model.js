@@ -14,6 +14,16 @@ class Model {
       body: JSON.stringify({ columnId, title, content }),
     }).then((res) => res.json());
   }
+
+  deleteCard(cardId) {
+    return fetch('/todo', {
+      headers: {
+        'content-type': 'application/json',
+      },
+      method: 'delete',
+      body: JSON.stringify({ cardId }),
+    });
+  }
 }
 
 const model = new Model();
