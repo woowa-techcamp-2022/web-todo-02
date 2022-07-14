@@ -6,6 +6,7 @@ class Controller {
 
   init() {
     this.initAllColumns();
+    this.initDefaultEvent();
   }
 
   initAllColumns() {
@@ -18,6 +19,12 @@ class Controller {
         });
       });
     });
+  }
+
+  initDefaultEvent() {
+    document.querySelector('#header-menubtn').addEventListener('click', view.displaySidebar);
+    document.querySelector('#aside-history-closebtn').addEventListener('click', view.hideSidebar);
+    document.querySelector('#aside-background').addEventListener('click', view.hideSidebar);
   }
 
   addCard(columnId, title, content) {
