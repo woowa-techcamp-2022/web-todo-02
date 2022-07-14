@@ -1,4 +1,4 @@
-import getConnection from '../db.js';
+import getConnection from './db.js';
 
 function getAllColumnsAndTodos() {
   let conn;
