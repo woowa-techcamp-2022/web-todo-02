@@ -188,6 +188,7 @@ export default class {
         });
     } else {
       $skeleton.remove();
+      view.removeClass(this.$element, 'hide');
     }
     view.removeClass(this.$element, 'moving');
     this.removeMouseEnterEventToAllCardLists();
