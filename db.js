@@ -8,9 +8,10 @@ const options = {
   database: process.env.DB_NAME,
 };
 
+const pool = mysql.createPool(options);
+
 function getConnection() {
-  return mysql.createConnection(options);
+  return pool.getConnection();
 }
 
-// 초기 테스트용 임시 함수. 나중에 지워도 됨.
 export default getConnection;

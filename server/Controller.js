@@ -1,5 +1,5 @@
 import dao from './Dao.js';
-import getUniqueId from './util/uuid.js';
+import getUniqueId from '../util/uuid.js';
 
 function getAllColumnsAndTodos(req, res) {
   dao

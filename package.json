@@ -5,10 +5,8 @@
   "main": "index.js",
   "scripts": {
     "watch": "cross-env NODE_ENV=development webpack",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack",
-    "dev": "nodemon app.js",
-    "start": "node app.js"
+    "dev": "nodemon ./server/app.js && npm run watch",
+    "start": "cross-env NODE_ENV=production webpack && node ./server/app.js"
   },
   "repository": {
     "type": "git",

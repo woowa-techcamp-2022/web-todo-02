@@ -1,4 +1,4 @@
-import getConnection from './db.js';
+import getConnection from '../db.js';
 
 function getAllColumnsAndTodos() {
   let conn;
@@ -6,7 +6,7 @@ function getAllColumnsAndTodos() {
   return new Promise((resolve, reject) => {
     getConnection()
       .then((connection) => (conn = connection))
-      .then((conn) =>
+      .then(() =>
         conn.execute(`
         select c.title as title, c.id as id, t.id as todo_id,
         t.title as todo_title, t.content as todo_content, t.pos as todo_order
@@ -19,7 +19,7 @@ function getAllColumnsAndTodos() {
         resolve(rows);
       })
       .catch((e) => reject(e))
-      .finally(() => conn.end());
+      .finally(() => conn.release());
   });
 }
 
@@ -54,7 +54,7 @@ function postTodo(id, title, content, columnId) {
       .then(() => resolve())
       .catch(() => conn.rollback())
       .then(() => reject())
-      .finally(() => conn.end());
+      .finally(() => conn.release());
   });
 }
 
@@ -155,7 +155,7 @@ function moveTodo(id, pos, columnId) {
       .then(() => resolve())
       .catch(() => conn.rollback())
       .then(() => reject())
-      .finally(() => conn.end());
+      .finally(() => conn.release());
   });
 }
 
@@ -189,7 +189,7 @@ function putTodo(id, title, content) {
       .then(() => resolve())
       .catch(() => conn.rollback())
       .then(() => reject())
-      .finally(() => conn.end());
+      .finally(() => conn.release());
   });
 }
 
@@ -223,7 +223,7 @@ function deleteTodo(id) {
       .then(() => resolve())
       .catch(() => conn.rollback())
       .then(() => reject())
-      .finally(() => conn.end());
+      .finally(() => conn.release());
   });
 }
 
@@ -257,7 +257,7 @@ function getAllHistory() {
         resolve(rows);
       })
       .catch((e) => reject(e))
-      .finally(() => conn.end());
+      .finally(() => conn.release());
   });
 }
 
