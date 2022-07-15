@@ -34,7 +34,7 @@ body {
   align-items: center;
 }
 
-.column-header>div {
+.column-header > div {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -234,4 +234,8 @@ body {
 
 .show {
   transform: translateX(-500px);
+}
+
+.hide {
+  display: none;
 }
