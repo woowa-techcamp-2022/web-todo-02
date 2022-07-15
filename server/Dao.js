@@ -1,4 +1,4 @@
-import getConnection from './db.js';
+import getConnection from '../db.js';
 
 function getAllColumnsAndTodos() {
   let conn;
@@ -6,7 +6,7 @@ function getAllColumnsAndTodos() {
   return new Promise((resolve, reject) => {
     getConnection()
       .then((connection) => (conn = connection))
-      .then((conn) =>
+      .then(() =>
         conn.execute(`
         select c.title as title, c.id as id, t.id as todo_id,
         t.title as todo_title, t.content as todo_content, t.pos as todo_order
