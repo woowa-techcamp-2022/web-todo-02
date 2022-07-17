@@ -3,10 +3,11 @@ import getUniqueId from '../util/uuid.js';
 
 function getAllColumnsAndTodos(req, res) {
   dao
-    .getAllColumnsAndTodos()
-    .then((dataArray) => {
+    .getColumnHandler()
+    .then(([rows, fields]) => {
       const result = new Map();
-      dataArray.forEach((data) => {
+
+      rows.forEach((data) => {
         const {
           title,
           id,
@@ -52,7 +53,7 @@ function postTodo(req, res) {
   const todoId = getUniqueId();
 
   dao
-    .postTodo(todoId, title, content, columnId)
+    .postTodoHandler(todoId, title, content, columnId)
     .then(() => {
       res.status(200).send({
         id: todoId,
@@ -69,7 +70,7 @@ function postTodo(req, res) {
 function putTodo(req, res) {
   const { cardId: id, title, content } = req.body;
   dao
-    .putTodo(id, title, content)
+    .putTodoHandler(id, title, content)
     .then(() => {
       res.status(200).send({
         id,
@@ -86,7 +87,7 @@ function moveTodo(req, res) {
   const { cardId: id, position, columnId } = req.body;
 
   dao
-    .moveTodo(id, position, columnId)
+    .moveTodoHandler(id, position, columnId)
     .then(() => {
       res.status(200).send({
         id,
@@ -103,7 +104,7 @@ function deleteTodo(req, res) {
   const { cardId: id } = req.body;
 
   dao
-    .deleteTodo(id)
+    .deleteTodoHandler(id)
     .then(() => {
       res.status(200).send();
     })
@@ -114,9 +115,9 @@ function deleteTodo(req, res) {
 
 function getAllHistory(req, res) {
   dao
-    .getAllHistory()
-    .then((datas) => {
-      res.status(200).send(datas);
+    .getHistoryHandler()
+    .then(([rows, fields]) => {
+      res.status(200).send(rows);
     })
     .catch(() => {
       res.status(500).send();

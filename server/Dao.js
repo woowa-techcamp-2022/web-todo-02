@@ -1,316 +1,294 @@
 import getConnection from '../db.js';
 
-function getAllColumnsAndTodos() {
+function getColumnHandler() {
   let conn;
 
-  return new Promise((resolve, reject) => {
-    getConnection()
-      .then((connection) => (conn = connection))
-      .then(() =>
-        conn.execute(`
-        select c.title as title, c.id as id, t.id as todo_id,
-        t.title as todo_title, t.content as todo_content, t.pos as todo_order
-        from col c
-        left join todo t
-        on c.id = t.col_id;
-      `)
-      )
-      .then(([rows, field]) => {
-        resolve(rows);
-      })
-      .catch((e) => reject(e))
-      .finally(() => conn.release());
-  });
+  return getConnection()
+    .then((connection) => (conn = connection))
+    .then(() => getAllColumnsAndTodos(conn))
+    .finally(() => conn.release());
 }
 
-function postTodo(id, title, content, columnId) {
+function postTodoHandler(id, title, content, columnId) {
   let conn;
 
-  return new Promise((resolve, reject) => {
-    getConnection()
-      .then((connection) => (conn = connection))
-      .then(() => conn.beginTransaction())
-      .then(() =>
-        conn.execute(
-          `
-          insert into todo (id, title, content, col_id, pos)
-          values (?, ?, ?, ?,
-            ifnull ((select pos from (select max(pos) as pos from todo where col_id = ?) temp), 0)
-          + 1);
-        `,
-          [id, title, content, columnId, columnId]
-        )
-      )
-      .then(() => getColumnTitle(conn, id))
-      .then(([rows, fields]) => {
-        return postHistory({
+  return getConnection()
+    .then((connection) => (conn = connection))
+    .then(() => conn.beginTransaction())
+    .then(() => {
+      const promises = [
+        postTodo(conn, id, title, content, columnId),
+        postHistory({
           conn,
           action: 'add',
+          todoId: id,
           todoTitle: title,
-          fromColTitle: rows[0].title,
-        });
-      })
-      .then(() => conn.commit())
-      .then(() => resolve())
-      .catch(() => conn.rollback())
-      .then(() => reject())
-      .finally(() => conn.release());
-  });
+        }),
+      ];
+
+      return Promise.all(promises);
+    })
+    .then(() => conn.commit())
+    .catch(() => conn.rollback())
+    .finally(() => conn.release());
 }
 
-function moveTodo(id, pos, columnId) {
+function putTodoHandler(id, title, content) {
+  let conn;
+
+  return getConnection()
+    .then((connection) => (conn = connection))
+    .then(() => conn.beginTransaction())
+    .then(() => {
+      const promises = [
+        putTodo(conn, id, title, content),
+        postHistory({
+          conn,
+          action: 'update',
+          todoId: id,
+          todoTitle: title,
+        }),
+      ];
+
+      return Promise.all(promises);
+    })
+    .then(() => conn.commit())
+    .catch(() => conn.rollback())
+    .finally(() => conn.release());
+}
+
+function deleteTodoHandler(id) {
+  let conn;
+
+  return getConnection()
+    .then((connection) => (conn = connection))
+    .then(() => conn.beginTransaction())
+    .then(() => {
+      const promises = [
+        postHistory({ conn, action: 'remove', todoId: id }),
+        deleteTodo(conn, id),
+      ];
+
+      return Promise.all(promises);
+    })
+    .then(() => conn.commit())
+    .catch(() => conn.rollback())
+    .finally(() => conn.release());
+}
+
+function moveTodoHandler(id, pos, columnId) {
   const position = Number(pos);
   let conn;
-  let originPos;
-  let originColId;
-  let originColTitle;
-  return new Promise((resolve, reject) => {
-    getConnection()
-      .then((connection) => (conn = connection))
-      .then(() => conn.beginTransaction())
-      .then(() =>
-        conn.execute(`select pos, col_id from todo where id = ?`, [id])
-      )
-      .then(([rows, fields]) => {
-        originPos = rows[0].pos;
-        originColId = rows[0].col_id;
 
-        if (originColId !== columnId) {
-          // 이동하는 컬럼 카드 조정
-          return conn.execute(
-            `
-            update todo
-            set pos = pos + 1
-            where col_id = ? and pos >= ?;
-            `,
-            [columnId, position]
+  return getConnection()
+    .then((connection) => (conn = connection))
+    .then(() => conn.beginTransaction())
+    .then(() => getOriginalPosAndColumn(conn, id))
+    .then(([rows, fields]) => {
+      const originPos = rows[0].pos;
+      const originColId = rows[0].col_id;
+      const promises = [];
+
+      if (originColId !== columnId) {
+        // 이동하는 컬럼 카드 조정
+        promises.push(plusTodoPostion(conn, columnId, position, null));
+        promises.push(minusTodoPostion(conn, originColId, originPos, null));
+      } else if (position !== originPos) {
+        // 동일 컬럼 카드 조정.
+        if (position > originPos)
+          promises.push(
+            minusTodoPostion(conn, originColId, originPos + 1, position)
           );
-        } else if (position !== originPos) {
-          // 동일 컬럼 카드 조정.
-          if (position > originPos) {
-            return conn.execute(
-              `
-                update todo
-                set pos = pos - 1
-                where col_id = ? and pos between ? and ?;
-                `,
-              [columnId, originPos + 1, position]
-            );
-          } else {
-            return conn.execute(
-              `
-                  update todo
-                  set pos = pos + 1
-                  where col_id = ? and pos between ? and ?;
-                  `,
-              [columnId, position, originPos - 1]
-            );
-          }
-        }
-      })
-      .then(() => {
-        //원래 컬럼 카드 조정
-        if (originColId !== columnId) {
-          return conn.execute(
-            `
-                  update todo
-                  set pos = pos - 1
-                  where col_id = ? and pos > ?;
-                  `,
-            [originColId, originPos]
+        else
+          promises.push(
+            plusTodoPostion(conn, originColId, position, originPos - 1)
           );
-        } else {
-          return new Promise((resolve, reject) => {
-            resolve();
-          });
-        }
-      })
-      .then(() => {
-        return conn.execute(
-          `
-          update todo
-          set pos = ?, col_id = ?
-          where id = ?;
-          `,
-          [position, columnId, id]
-        );
-      })
-      .then(() =>
-        conn.execute(`select title from col where id = ?`, [originColId])
-      )
-      .then(([rows, fields]) => {
-        originColTitle = rows[0].title;
-        return conn.execute(`select title from col where id = ?`, [columnId]);
-      })
-      .then(([rows, fields]) =>
+      }
+
+      promises.push(moveTodo(conn, id, position, columnId));
+      promises.push(
         postHistory({
           conn,
           action: 'move',
           todoId: id,
-          fromColTitle: originColTitle,
-          toColTitle: rows[0].title,
+          fromColId: originColId,
+          toColId: columnId,
         })
-      )
-      .then(() => conn.commit())
-      .then(() => resolve())
-      .catch(() => conn.rollback())
-      .then(() => reject())
-      .finally(() => conn.release());
-  });
+      );
+
+      return Promise.all(promises);
+    })
+    .then(() => conn.commit())
+    .catch(() => conn.rollback())
+    .finally(() => conn.release());
 }
 
-function putTodo(id, title, content) {
+function getHistoryHandler() {
   let conn;
 
-  return new Promise((resolve, reject) => {
-    getConnection()
-      .then((connection) => (conn = connection))
-      .then(() => conn.beginTransaction())
-      .then(() => getColumnTitle(conn, id))
-      .then(([rows, fields]) =>
-        postHistory({
-          conn,
-          action: 'update',
-          todoTitle: title,
-          fromColTitle: rows[0].title,
-        })
-      )
-      .then(() =>
-        conn.execute(
-          `
-            update todo
-            set title = ?, content = ?
-            where id = ?
-          `,
-          [title, content, id]
-        )
-      )
-      .then(() => conn.commit())
-      .then(() => resolve())
-      .catch(() => conn.rollback())
-      .then(() => reject())
-      .finally(() => conn.release());
-  });
+  return getConnection()
+    .then((connection) => (conn = connection))
+    .then(() => getAllHistory(conn))
+    .finally(() => conn.release());
 }
 
-function deleteTodo(id) {
-  let conn;
-
-  return new Promise((resolve, reject) => {
-    getConnection()
-      .then((connection) => (conn = connection))
-      .then(() => conn.beginTransaction())
-      .then(() => getColumnTitle(conn, id))
-      .then(([rows, fields]) =>
-        postHistory({
-          conn,
-          action: 'remove',
-          todoId: id,
-          fromColTitle: rows[0].title,
-        })
-      )
-      .then(() =>
-        conn.execute(
-          `
-            delete
-            from todo
-            where id = ?;
-          `,
-          [id]
-        )
-      )
-      .then(() => conn.commit())
-      .then(() => resolve())
-      .catch(() => conn.rollback())
-      .then(() => reject())
-      .finally(() => conn.release());
-  });
-}
-
-function getColumnTitle(conn, cardId) {
+function getAllColumnsAndTodos(conn) {
   return conn.execute(
     `
-      select title
-      from col
-      where id = (select col_id from todo where id = ?)
-    `,
-    [cardId]
+      select c.title as title, c.id as id, t.id as todo_id,
+      t.title as todo_title, t.content as todo_content, t.pos as todo_order
+      from col c
+      left join todo t
+      on c.id = t.col_id;
+    `
   );
 }
 
-function getAllHistory() {
-  let conn;
-
-  return new Promise((resolve, reject) => {
-    getConnection()
-      .then((connection) => (conn = connection))
-      .then((conn) =>
-        conn.execute(
-          `
-            select *
-            from hist
-            order by created_time desc;
-          `
-        )
-      )
-      .then(([rows, field]) => {
-        resolve(rows);
-      })
-      .catch((e) => reject(e))
-      .finally(() => conn.release());
-  });
+function postTodo(conn, id, title, content, columnId) {
+  return conn.execute(
+    `
+      insert into todo (id, title, content, col_id, pos)
+      values (?, ?, ?, ?,
+        ifnull ((select pos from (select max(pos) as pos from todo where col_id = ?) temp), 0)
+      + 1);
+    `,
+    [id, title, content, columnId, columnId]
+  );
 }
 
-function postHistory({
-  conn,
-  action,
-  todoId,
-  todoTitle,
-  fromColTitle,
-  toColTitle,
-}) {
+function moveTodo(conn, id, position, columnId) {
+  return conn.execute(
+    `
+    update todo
+    set pos = ?, col_id = ?
+    where id = ?;
+    `,
+    [position, columnId, id]
+  );
+}
+
+function putTodo(conn, todoId, title, content) {
+  return conn.execute(
+    `
+      update todo
+      set title = ?, content = ?
+      where id = ?
+    `,
+    [title, content, todoId]
+  );
+}
+
+function deleteTodo(conn, todoId) {
+  return conn.execute(
+    `
+      delete
+      from todo
+      where id = ?;
+    `,
+    [todoId]
+  );
+}
+
+function getAllHistory(conn) {
+  return conn.execute(
+    `
+      select *
+      from hist
+      order by created_time desc;
+    `
+  );
+}
+
+function postHistory({ conn, action, todoId, todoTitle, fromColId, toColId }) {
   switch (action) {
     case 'move':
       return conn.execute(
         `
           insert into hist (act, title, from_col, to_col)
-          values (?, (select title from todo where id = ?), ?, ?)
+          values (?, (select title from todo where id = ?), (select title from col where id = ?), (select title from col where id = ?))
         `,
-        [action, todoId, fromColTitle, toColTitle]
+        [action, todoId, fromColId, toColId]
       );
     case 'remove':
       return conn.execute(
         `
           insert into hist (act, title, from_col)
-          values (?, (select title from todo where id = ?), ?)
+          values (?, (select title from todo where id = ?), (select c.title from col c join todo t on t.col_id = c.id where t.id = ?))
         `,
-        [action, todoId, fromColTitle]
+        [action, todoId, todoId]
       );
     case 'add':
       return conn.execute(
         `
           insert into hist (act, title, from_col)
-          values (?, ?, ?)
+          values (?, ?, (select c.title from col c join todo t on t.col_id = c.id where t.id = ?))
         `,
-        [action, todoTitle, fromColTitle]
+        [action, todoTitle, todoId]
       );
     case 'update':
       return conn.execute(
         `
           insert into hist (act, title, from_col)
-          values (?, ?, ?)
+          values (?, ?, (select c.title from col c join todo t on t.col_id = c.id where t.id = ?))
         `,
-        [action, todoTitle, fromColTitle]
+        [action, todoTitle, todoId]
       );
   }
 }
 
+function getOriginalPosAndColumn(conn, todoId) {
+  return conn.execute(`select pos, col_id from todo where id = ?`, [todoId]);
+}
+
+function plusTodoPostion(conn, columnId, from, to) {
+  if (to) {
+    return conn.execute(
+      `
+        update todo
+        set pos = pos + 1
+        where col_id = ? and pos > ?;
+      `,
+      [columnId, from]
+    );
+  } else {
+    return conn.execute(
+      `
+        update todo
+        set pos = pos + 1
+        where col_id = ? and pos between ? and ?;
+      `,
+      [columnId, from, to]
+    );
+  }
+}
+
+function minusTodoPostion(conn, columnId, from, to) {
+  if (to) {
+    return conn.execute(
+      `
+        update todo
+        set pos = pos - 1
+        where col_id = ? and pos > ?;
+      `,
+      [columnId, from]
+    );
+  } else {
+    return conn.execute(
+      `
+        update todo
+        set pos = pos - 1
+        where col_id = ? and pos between ? and ?;
+      `,
+      [columnId, from, to]
+    );
+  }
+}
+
 export default {
-  getAllColumnsAndTodos,
-  postTodo,
-  putTodo,
-  moveTodo,
-  deleteTodo,
-  getAllHistory,
-  postHistory,
+  getColumnHandler,
+  postTodoHandler,
+  putTodoHandler,
+  deleteTodoHandler,
+  moveTodoHandler,
+  getHistoryHandler,
 };
